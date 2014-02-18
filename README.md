@@ -10,11 +10,16 @@ Instructions
 * There are several deliberate design, code quality and test issues that should be identified and resolved.
 * Below is a list of the current features supported by the application; as well as some additional features that have been requested by the business owner.
 * In order to work on this take a fork into your own GitHub area; make whatever changes you feel are necessary and when you are satisfied submit back via a pull request. See details on GitHub's [Fork & Pull](https://help.github.com/articles/using-pull-requests) model
-* The project uses nuget to resolve dependencies however if you want to avoid nuget configuration the only external binary that's required is NUnit.
 * Refactor and add features (from the below list) as you see fit; there is no need to add all the features in order to "complete" the exercise. Keep in mind that code quality is the critical measure and there should be an obvious focus on testing.
 * You'll notice there is no database or UI; these are not needed - the exercise deliberately avoids these requirements.
 * REMEMBER: this is YOUR code, made any changes you feel are necessary.
 * You're welcome to spend as much time as you like; however it's anticipated that this should take about 2 hours.
+
+Prerequisites
+--------
+* This project was set up using Visual Studio 2013 Express Edition but feel free to use a different (even older) version.  The source should easily transfer across versions.
+* The project uses nuget to automatically resolve dependencies however if you want to avoid nuget the only external binary that's required is NUnit 2.6.3.
+* NUnit GUI runner can always be used to run the tests if Express edition of Visual Studio is being used.
 
 abc-bank
 --------
