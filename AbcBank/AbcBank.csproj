@@ -43,6 +43,14 @@
     <Compile Include="Bank.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="DateProvider.cs" />
+    <Compile Include="Enums\AccountType.cs" />
+    <Compile Include="Enums\TransactionType.cs" />
+    <Compile Include="Enums\TransferResult.cs" />
+    <Compile Include="Interfaces\iDateProvider.cs" />
+    <Compile Include="Interfaces\iAccount.cs" />
+    <Compile Include="Interfaces\iBank.cs" />
+    <Compile Include="Interfaces\iCustomer.cs" />
+    <Compile Include="Interfaces\iTransaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transaction.cs" />
   </ItemGroup>

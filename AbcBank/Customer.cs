@@ -3,93 +3,116 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AbcBank.Interfaces;
+using AbcBank.Enums;
 
 namespace AbcBank
 {
-    public class Customer
+    public class Customer : iCustomer
     {
         private String name;
-        private List<Account> accounts;
+        private List<iAccount> accounts;
 
         public Customer(String name)
         {
             this.name = name;
-            this.accounts = new List<Account>();
+            this.accounts = new List<iAccount>();
         }
 
-        public String getName()
+        public String GetName()
         {
             return name;
         }
 
-        public Customer openAccount(Account account)
+        public void OpenAccount(iAccount account)
         {
-            accounts.Add(account);
-            return this;
+            if (account is Account)
+            {
+                accounts.Add(account);         
+            }                 
         }
 
-        public int getNumberOfAccounts()
+        public int GetNumberOfAccounts()
         {
             return accounts.Count;
         }
 
-        public double totalInterestEarned()
+        public double TotalInterestEarned()
         {
             double total = 0;
             foreach (Account a in accounts)
-                total += a.interestEarned();
+                total += a.InterestEarned();
             return total;
+        }
+
+        public TransferResult TransferFunds(iAccount accountFrom, iAccount accountTo, double amount)
+        {
+            try
+            {
+                if ((accountFrom.Balance() - amount) < 0)
+                    return TransferResult.InvalidFunds;
+
+                accountFrom.Withdraw(amount);
+                accountTo.Deposit(amount);
+
+                return TransferResult.Transferred;
+            }
+            catch
+            {
+                return TransferResult.Error;
+            }
         }
 
         /*******************************
          * This method gets a statement
          *********************************/
-        public String getStatement()
+        public String GetStatement()
         {
+
+            var statement = new StringBuilder();
             //JIRA-123 Change by Joe Bloggs 29/7/1988 start
-            String statement = null; //reset statement to null here
+            //String statement = null; //reset statement to null here
             //JIRA-123 Change by Joe Bloggs 29/7/1988 end
-            statement = "Statement for " + name + "\n";
+            statement.AppendLine("Statement for " + name );
             double total = 0.0;
             foreach (Account a in accounts)
             {
-                statement += "\n" + statementForAccount(a) + "\n";
-                total += a.sumTransactions();
+                statement.AppendLine("\r\n" + StatementForAccount(a));
+                total += a.Balance();
             }
-            statement += "\nTotal In All Accounts " + toDollars(total);
-            return statement;
+            statement .Append ("\r\nTotal In All Accounts " + ToDollars(total));
+            return statement.ToString();
         }
 
-        private String statementForAccount(Account a)
+        private String StatementForAccount(Account account)
         {
-            String s = "";
+            var statement = new StringBuilder();
 
             //Translate to pretty account type
-            switch (a.getAccountType())
+            switch (account.GetAccountType())
             {
-                case Account.CHECKING:
-                    s += "Checking Account\n";
+                case AccountType.Checking:
+                    statement.AppendLine("Checking Account");
                     break;
-                case Account.SAVINGS:
-                    s += "Savings Account\n";
+                case AccountType.Savings:
+                    statement.AppendLine("Savings Account");
                     break;
-                case Account.MAXI_SAVINGS:
-                    s += "Maxi Savings Account\n";
+                case AccountType.MaxiSavings:
+                    statement.AppendLine("Maxi Savings Account");
                     break;
             }
 
             //Now total up all the transactions
-            double total = 0.0;
-            foreach (Transaction t in a.transactions)
+            foreach (Transaction t in account.transactions)
             {
-                s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.amount) + "\n";
-                total += t.amount;
+                statement.AppendLine("  " + (t.TransactionType == TransactionType.Withdrawal ? "withdrawal" : "deposit") + " " + ToDollars(t.Amount));
             }
-            s += "Total " + toDollars(total);
-            return s;
+
+            statement.Append("Total " + ToDollars(account.Balance()));
+            return statement.ToString();
         }
 
-        private String toDollars(double d)
+        private String ToDollars(double d)
         {
             return String.Format("${0:N2}", Math.Abs(d));
         }
