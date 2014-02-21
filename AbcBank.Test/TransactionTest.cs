@@ -11,10 +11,14 @@ namespace AbcBank.Test
     public class TransactionTest
     {
         [Test]
-        public void transaction()
+        public void TestCreateTransaction()
         {
-            Transaction t = new Transaction(5);
+            DummyDateProvider.SetNow("1/1/2001");
+
+            Transaction t = new Transaction(5, DummyDateProvider.GetInstance());
             Assert.AreEqual(true, t is Transaction);
+            Assert.AreEqual("1/1/2001", DummyDateProvider.GetInstance().Now().ToShortDateString());
         }
+
     }
 }

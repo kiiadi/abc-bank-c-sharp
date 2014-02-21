@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using AbcBank.Interfaces;
+using AbcBank.Enums;
 
 namespace AbcBank.Test
 {
@@ -11,56 +13,99 @@ namespace AbcBank.Test
     public class CustomerTest
     {
 
+        iBank bank;
+        iCustomer customer;
+        iAccount savingsAccount;
+        iAccount checkingAccount;
+        iAccount maxiSavingAccount;
+
+        [SetUp]
+        public void init()
+        {
+            bank = new Bank();
+            customer = new Customer("Sung");
+            checkingAccount = new Account(AccountType.Checking);
+            savingsAccount = new Account(AccountType.Savings);
+            maxiSavingAccount = new Account(AccountType.MaxiSavings);
+        }
+
         [Test] //Test customer statement generation
-        public void testApp()
+        public void TestCustomerStatementGeneration()
         {
+            customer.OpenAccount(checkingAccount);
+            customer.OpenAccount(savingsAccount);
 
-            Account checkingAccount = new Account(Account.CHECKING);
-            Account savingsAccount = new Account(Account.SAVINGS);
+            checkingAccount.Deposit(100.0);
+            savingsAccount.Deposit(4000.0);
+            savingsAccount.Withdraw(200.0);
 
-            Customer henry = new Customer("Henry").openAccount(checkingAccount).openAccount(savingsAccount);
-
-            checkingAccount.deposit(100.0);
-            savingsAccount.deposit(4000.0);
-            savingsAccount.withdraw(200.0);
-
-            Assert.AreEqual("Statement for Henry\n" +
-                    "\n" +
-                    "Checking Account\n" +
-                    "  deposit $100.00\n" +
-                    "Total $100.00\n" +
-                    "\n" +
-                    "Savings Account\n" +
-                    "  deposit $4,000.00\n" +
-                    "  withdrawal $200.00\n" +
-                    "Total $3,800.00\n" +
-                    "\n" +
-                    "Total In All Accounts $3,900.00", henry.getStatement());
+            Assert.AreEqual("Statement for Sung\r\n" +
+                    "\r\n" +
+                    "Checking Account\r\n" +
+                    "  deposit $100.00\r\n" +
+                    "Total $100.00\r\n" +
+                    "\r\n" +
+                    "Savings Account\r\n" +
+                    "  deposit $4,000.00\r\n" +
+                    "  withdrawal $200.00\r\n" +
+                    "Total $3,800.00\r\n" +
+                    "\r\n" +
+                    "Total In All Accounts $3,900.00", customer.GetStatement());
         }
 
         [Test]
-        public void testOneAccount()
+        public void TestCreationOfOneAccount()
         {
-            Customer oscar = new Customer("Oscar").openAccount(new Account(Account.SAVINGS));
-            Assert.AreEqual(1, oscar.getNumberOfAccounts());
+            customer.OpenAccount(savingsAccount);
+            Assert.AreEqual(1, customer.GetNumberOfAccounts());
         }
 
         [Test]
-        public void testTwoAccount()
+        public void TestCreationOfTwoAccount()
         {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
-            Assert.AreEqual(2, oscar.getNumberOfAccounts());
+            customer.OpenAccount(savingsAccount);
+            customer.OpenAccount(checkingAccount);
+            Assert.AreEqual(2, customer.GetNumberOfAccounts());
         }
 
-        [Ignore]
-        public void testThreeAcounts()
+        [Test]
+        public void TestCreationOfThreeAcounts()
         {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
-            Assert.AreEqual(3, oscar.getNumberOfAccounts());
+            customer.OpenAccount(savingsAccount);
+            customer.OpenAccount(checkingAccount);
+            customer.OpenAccount(maxiSavingAccount);
+
+            Assert.AreEqual(3, customer.GetNumberOfAccounts());
+        }
+
+        [Test]
+        public void TestTransferFund()
+        {
+            customer.OpenAccount(savingsAccount);
+            customer.OpenAccount(checkingAccount);
+
+            savingsAccount.Deposit(1000);
+            checkingAccount.Deposit(1000);
+
+            var transferResult =  customer.TransferFunds(savingsAccount, checkingAccount, 50);
+
+            Assert.AreEqual(transferResult, TransferResult.Transferred);
+            Assert.AreEqual(950, savingsAccount.Balance(), "Incorrect savings balance");
+            Assert.AreEqual(1050, checkingAccount.Balance(), "Incorrect checking balance");
+        }
+
+        [Test]
+        public void TestTransferFundInvalidAmount()
+        {
+            customer.OpenAccount(savingsAccount);
+            customer.OpenAccount(checkingAccount);
+
+            savingsAccount.Deposit(1000);
+            checkingAccount.Deposit(1000);
+
+            var transferResult = customer.TransferFunds(savingsAccount, checkingAccount, 1050);
+
+            Assert.AreEqual(transferResult, TransferResult.InvalidFunds);
         }
     }
 }
