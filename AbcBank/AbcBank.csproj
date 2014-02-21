@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AbcBank</RootNamespace>
     <AssemblyName>AbcBank</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,12 +40,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account.cs" />
-    <Compile Include="Bank.cs" />
-    <Compile Include="Customer.cs" />
-    <Compile Include="DateProvider.cs" />
+    <Compile Include="Business\Account.cs" />
+    <Compile Include="Business\Bank.cs" />
+    <Compile Include="Business\Customer.cs" />
+    <Compile Include="Application\DoubleExtensionsMethods.cs" />
+    <Compile Include="Application\Enums.cs" />
+    <Compile Include="Application\MainFactory.cs" />
+    <Compile Include="Business\RateCalculators\BankInterestCalculator.cs" />
+    <Compile Include="Business\RateCalculators\CustomerInterestCalculator.cs" />
+    <Compile Include="Business\RateCalculators\AccountCheckingRateCalculator.cs" />
+    <Compile Include="Business\RateCalculators\IAccountRateCalculator.cs" />
+    <Compile Include="Business\StatementGenerators\AccountStatement.cs" />
+    <Compile Include="Business\StatementGenerators\BankStatement.cs" />
+    <Compile Include="Business\StatementGenerators\CustomerStatement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Transaction.cs" />
+    <Compile Include="Business\RateCalculators\AccountMaxiSavingsRateCalculator.cs" />
+    <Compile Include="Business\RateCalculators\AccountSavingsRateCalculator.cs" />
+    <Compile Include="Business\Transaction.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
