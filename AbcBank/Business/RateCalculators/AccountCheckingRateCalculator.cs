@@ -7,9 +7,9 @@ namespace AbcBank.Business
 {
     public class AccountCheckingRateCalculator : IAccountRateCalculator
     {
-        public double Calculate(double amount)
+        public double Calculate(IAccountForRateCalculators account)
         {
-            return amount * 0.001;
+            return account.CurrentAmount * 0.001;
         }
     }
 }

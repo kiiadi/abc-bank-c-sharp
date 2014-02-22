@@ -7,6 +7,6 @@ namespace AbcBank.Business
 {
     public interface IAccountRateCalculator
     {
-        double Calculate(double amount);
+        double Calculate(IAccountForRateCalculators account);
     }
 }

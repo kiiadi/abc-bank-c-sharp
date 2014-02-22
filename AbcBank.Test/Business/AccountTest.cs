@@ -142,7 +142,7 @@ namespace AbcBank.Test.Business
             double dummy = target.InterestEarned;
 
             //Assert
-            accountRateCalculatorStub.AssertWasCalled(c => c.Calculate(Arg<double>.Is.Anything));
+            accountRateCalculatorStub.AssertWasCalled(c => c.Calculate(Arg<IAccountForRateCalculators>.Is.Anything));
         }
 
         [Test]

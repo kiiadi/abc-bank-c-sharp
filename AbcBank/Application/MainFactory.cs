@@ -31,7 +31,6 @@ namespace AbcBank.Application
         }
         #endregion
 
-
         #region IAccountFactory
         public IAccount GetNewAccount(AccountTypes accountType)
         {

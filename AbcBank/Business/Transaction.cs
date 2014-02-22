@@ -11,12 +11,14 @@ namespace AbcBank.Business
     {
         double Amount { get; }
         string Type { get; }
+        int AgeInDays { get; }
     }
 
     public class Transaction : ITransaction
     {
-        private readonly DateTime transactionDate;
-        
+        private readonly DateTime transactionDateTime;
+
+        #region Properties
         public double Amount { get; private set; }
 
         public string Type 
@@ -24,10 +26,16 @@ namespace AbcBank.Business
             get { return Amount < 0 ? TransactionTypes.WITHDRAWAL : TransactionTypes.DEPOSIT; }
         }
 
+        public int AgeInDays
+        {
+            get { return (DateTime.Now - transactionDateTime).Days; }
+        }
+        #endregion
+
         public Transaction(double amount)
         {
             Amount = amount;
-            transactionDate = DateTime.Now;
+            transactionDateTime = DateTime.Now;
         }
     }
 }

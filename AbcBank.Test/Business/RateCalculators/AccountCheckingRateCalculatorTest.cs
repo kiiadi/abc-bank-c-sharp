@@ -25,8 +25,12 @@ namespace AbcBank.Test.Business.RateCalculators
 
             double depositAmount = new Random().Next();
 
+            IAccountForRateCalculators accountStub = MockRepository.GenerateStub<IAccountForRateCalculators>();
+            accountStub.Stub(a => a.CurrentAmount).Return(depositAmount);
+
+
             //Act
-            double calculatedActual = target.Calculate(depositAmount);
+            double calculatedActual = target.Calculate(accountStub);
             double calculatedExpected = depositAmount * 0.001;
 
             //Assert

@@ -18,7 +18,13 @@ namespace AbcBank.Business
         void Withdraw(double amount);
     }
 
-    public class Account : IAccount
+    public interface IAccountForRateCalculators
+    {
+        double CurrentAmount { get; }
+        List<ITransaction> Transactions { get; }
+    }
+
+    public class Account : IAccount, IAccountForRateCalculators
     {
         private static int NEXT_ACCOUNT_NUMBER = 10000001;
 
@@ -40,7 +46,12 @@ namespace AbcBank.Business
 
         public double InterestEarned
         {
-            get { return rateCalculator.Calculate(CurrentAmount); }
+            get { return rateCalculator.Calculate(this); }
+        }
+
+        public List<ITransaction> Transactions
+        {
+            get { return transactions; }
         }
         #endregion
 
@@ -86,6 +97,6 @@ namespace AbcBank.Business
             }
         }
         #endregion
-
+        
     }
 }
