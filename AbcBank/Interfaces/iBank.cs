@@ -11,5 +11,6 @@ namespace AbcBank.Interfaces
         void AddCustomer(iCustomer customer);
         string CustomerSummary();        
         double TotalInterestPaid();
+        double TotalInterestPaid(DateTime now);
     }
 }

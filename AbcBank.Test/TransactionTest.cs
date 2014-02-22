@@ -15,7 +15,7 @@ namespace AbcBank.Test
         {
             DummyDateProvider.SetNow("1/1/2001");
 
-            Transaction t = new Transaction(5, DummyDateProvider.GetInstance());
+            Transaction t = new Transaction(5, DummyDateProvider.GetInstance().Now());
             Assert.AreEqual(true, t is Transaction);
             Assert.AreEqual("1/1/2001", DummyDateProvider.GetInstance().Now().ToShortDateString());
         }

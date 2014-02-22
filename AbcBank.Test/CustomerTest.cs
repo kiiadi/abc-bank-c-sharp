@@ -61,7 +61,7 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void TestCreationOfTwoAccount()
+        public void TestCreationOfTwoAccounts()
         {
             customer.OpenAccount(savingsAccount);
             customer.OpenAccount(checkingAccount);

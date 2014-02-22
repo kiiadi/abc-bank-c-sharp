@@ -9,11 +9,11 @@ namespace AbcBank
 {
     public class DateProvider: iDateProvider
     {
-        private static DateProvider instance = new DateProvider();
+        private static DateProvider _instance = new DateProvider();
 
         public static DateProvider GetInstance()
         {
-            return instance;
+            return _instance;
         }
 
         public DateTime Now()

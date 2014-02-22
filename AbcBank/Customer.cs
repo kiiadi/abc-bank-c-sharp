@@ -5,44 +5,49 @@ using System.Text;
 using System.Threading.Tasks;
 using AbcBank.Interfaces;
 using AbcBank.Enums;
+using System.Linq.Expressions;
+
 
 namespace AbcBank
 {
     public class Customer : iCustomer
     {
-        private String name;
-        private List<iAccount> accounts;
+        private String _name;
+        private List<iAccount> _accounts;
+
+        public String Name
+        {
+            get { return _name; }
+        }
 
         public Customer(String name)
         {
-            this.name = name;
-            this.accounts = new List<iAccount>();
-        }
-
-        public String GetName()
-        {
-            return name;
+            this._name = name;
+            this._accounts = new List<iAccount>();
         }
 
         public void OpenAccount(iAccount account)
         {
             if (account is Account)
             {
-                accounts.Add(account);         
+                _accounts.Add(account);         
             }                 
         }
 
         public int GetNumberOfAccounts()
         {
-            return accounts.Count;
+            return _accounts.Count;
         }
 
         public double TotalInterestEarned()
         {
-            double total = 0;
-            foreach (Account a in accounts)
-                total += a.InterestEarned();
-            return total;
+            return _accounts.Sum(x => x.InterestEarned());
+        }
+
+        public double TotalInterestEarned(DateTime now)
+        {
+            return -1;
+            //return accounts.Sum(x => x.InterestEarned(now));
         }
 
         public TransferResult TransferFunds(iAccount accountFrom, iAccount accountTo, double amount)
@@ -68,17 +73,13 @@ namespace AbcBank
          *********************************/
         public String GetStatement()
         {
-
             var statement = new StringBuilder();
-            //JIRA-123 Change by Joe Bloggs 29/7/1988 start
-            //String statement = null; //reset statement to null here
-            //JIRA-123 Change by Joe Bloggs 29/7/1988 end
-            statement.AppendLine("Statement for " + name );
-            double total = 0.0;
-            foreach (Account a in accounts)
+         
+            statement.AppendLine("Statement for " + _name );
+            double total = _accounts.Sum(x=> x.Balance());
+            foreach (Account a in _accounts)
             {
                 statement.AppendLine("\r\n" + StatementForAccount(a));
-                total += a.Balance();
             }
             statement .Append ("\r\nTotal In All Accounts " + ToDollars(total));
             return statement.ToString();
@@ -89,7 +90,7 @@ namespace AbcBank
             var statement = new StringBuilder();
 
             //Translate to pretty account type
-            switch (account.GetAccountType())
+            switch (account.AccountType)
             {
                 case AccountType.Checking:
                     statement.AppendLine("Checking Account");
@@ -103,7 +104,7 @@ namespace AbcBank
             }
 
             //Now total up all the transactions
-            foreach (Transaction t in account.transactions)
+            foreach (Transaction t in account.Transactions)
             {
                 statement.AppendLine("  " + (t.TransactionType == TransactionType.Withdrawal ? "withdrawal" : "deposit") + " " + ToDollars(t.Amount));
             }

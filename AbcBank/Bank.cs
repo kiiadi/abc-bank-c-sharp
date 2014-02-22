@@ -4,28 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AbcBank.Interfaces;
+using System.Linq.Expressions;
 
 namespace AbcBank
 {
     public class Bank: iBank
     {
-        private List<iCustomer> customers;
+        private List<iCustomer> Customers;
 
         public Bank()
         {
-            customers = new List<iCustomer>();
+            Customers = new List<iCustomer>();
         }
 
         public void AddCustomer(iCustomer customer)
         {
-            customers.Add(customer);
+            Customers.Add(customer);
         }
 
         public String CustomerSummary()
         {
             String summary = "Customer Summary";
-            foreach (Customer c in customers)
-                summary += "\n - " + c.GetName() + " (" + Format(c.GetNumberOfAccounts(), "account") + ")";
+            foreach (Customer c in Customers)
+                summary += "\n - " + c.Name + " (" + Format(c.GetNumberOfAccounts(), "account") + ")";
             return summary;
         }
 
@@ -38,18 +39,20 @@ namespace AbcBank
 
         public double TotalInterestPaid()
         {
-            double total = 0;
-            foreach (Customer c in customers)
-                total += c.TotalInterestEarned();
-            return total;
+            return Customers.Sum(x => (x as Customer).TotalInterestEarned());
+        }
+
+        public double TotalInterestPaid(DateTime now)
+        {
+            return Customers.Sum(x => (x as Customer).TotalInterestEarned(now));
         }
 
         public String GetFirstCustomer()
         {
             try
             {
-                customers = null;
-                return customers[0].GetName();
+                Customers = null;
+                return (Customers[0] as Customer).Name;
             }
             catch (Exception e)
             {

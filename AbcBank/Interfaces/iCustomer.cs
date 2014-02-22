@@ -10,7 +10,6 @@ namespace AbcBank.Interfaces
     public interface iCustomer
     {
         void OpenAccount(iAccount account);
-        string GetName();
         string GetStatement();
         int GetNumberOfAccounts();
         TransferResult TransferFunds(iAccount accountFrom, iAccount accountTo, double amount);

@@ -11,14 +11,14 @@ namespace AbcBank
     public class Transaction: iTransaction
     {
         public readonly double Amount;
-        public TransactionType TransactionType;
-        private DateTime _transactionDate;
+        public readonly TransactionType TransactionType;
+        public readonly DateTime TransactionDate;
 
-        public Transaction(double amount, iDateProvider dateProvider)
+        public Transaction(double amount, DateTime transactionDate)
         {
             this.Amount = amount;
             this.TransactionType = (amount < 0 ? TransactionType.Withdrawal : TransactionType.Deposit);
-            this._transactionDate = dateProvider.Now();
+            this.TransactionDate = transactionDate;
         }
 
     }
