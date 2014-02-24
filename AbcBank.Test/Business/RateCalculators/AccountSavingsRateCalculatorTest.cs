@@ -23,14 +23,23 @@ namespace AbcBank.Test.Business.RateCalculators
             //Arrange
             var target = CreateTarget();
 
-            double depositAmount = new Random().Next(1, 1001);
-
+            double depositAmount = 500;
             IAccountForRateCalculators accountStub = MockRepository.GenerateStub<IAccountForRateCalculators>();
+            List<InvestmentPeriod> investmentPeriods = new List<InvestmentPeriod>() 
+            {
+                new InvestmentPeriod {amount = 300, days = 27},
+                new InvestmentPeriod {amount = 200, days = 35},
+            };
+            accountStub.Stub(a => a.InvestmentPeriods).Return(investmentPeriods);
             accountStub.Stub(a => a.CurrentAmount).Return(depositAmount);
+
 
             //Act
             double calculatedActual = target.Calculate(accountStub);
-            double calculatedExpected = depositAmount * 0.001;
+
+            double period1amount = CompoundInterestRate.Calculate(300, 0.001, 27);
+            double period2amount = CompoundInterestRate.Calculate(200 + period1amount, 0.001, 35);
+            double calculatedExpected = period2amount - depositAmount;
 
             //Assert
             Assert.AreEqual(calculatedExpected, calculatedActual);
@@ -42,14 +51,50 @@ namespace AbcBank.Test.Business.RateCalculators
             //Arrange
             var target = CreateTarget();
 
-            double depositAmount = new Random().Next(1001, int.MaxValue);
-
+            double depositAmount = 5000;
             IAccountForRateCalculators accountStub = MockRepository.GenerateStub<IAccountForRateCalculators>();
+            List<InvestmentPeriod> investmentPeriods = new List<InvestmentPeriod>() 
+            {
+                new InvestmentPeriod {amount = 3000, days = 27},
+                new InvestmentPeriod {amount = 2000, days = 35},
+            };
+            accountStub.Stub(a => a.InvestmentPeriods).Return(investmentPeriods);
             accountStub.Stub(a => a.CurrentAmount).Return(depositAmount);
 
             //Act
             double calculatedActual = target.Calculate(accountStub);
-            double calculatedExpected = 1 + (depositAmount - 1000) * 0.002;
+            
+            double period1amount = CompoundInterestRate.Calculate(3000, 0.002, 27);
+            double period2amount = CompoundInterestRate.Calculate(2000 + period1amount, 0.002, 35);
+            double calculatedExpected = period2amount - depositAmount;
+
+            //Assert
+            Assert.AreEqual(calculatedExpected, calculatedActual);
+        }
+
+        [Test]
+        public void Calculate_MixedAmount_Correct()
+        {
+            //Arrange
+            var target = CreateTarget();
+
+            double depositAmount = 1500;
+            IAccountForRateCalculators accountStub = MockRepository.GenerateStub<IAccountForRateCalculators>();
+            List<InvestmentPeriod> investmentPeriods = new List<InvestmentPeriod>() 
+            {
+                new InvestmentPeriod {amount = 300, days = 27},
+                new InvestmentPeriod {amount = 1200, days = 35},
+            };
+            accountStub.Stub(a => a.InvestmentPeriods).Return(investmentPeriods);
+            accountStub.Stub(a => a.CurrentAmount).Return(depositAmount);
+
+
+            //Act
+            double calculatedActual = target.Calculate(accountStub);
+
+            double period1amount = CompoundInterestRate.Calculate(300, 0.001, 27);
+            double period2amount = CompoundInterestRate.Calculate(1200 + period1amount, 0.002, 35);
+            double calculatedExpected = period2amount - depositAmount;
 
             //Assert
             Assert.AreEqual(calculatedExpected, calculatedActual);

@@ -34,12 +34,17 @@ namespace AbcBank.Application
         #region IAccountFactory
         public IAccount GetNewAccount(AccountTypes accountType)
         {
-            return new Account(accountType, this as ITransactionFactory, GetAccountStatement(), GetAccountRateCalculator(accountType));
+            return new Account(accountType, this as ITransactionFactory, GetAccountStatement(), GetAccountRateCalculator(accountType), GetTransactionsToPeriodsConverter());
         }
 
         private IAccountStatement GetAccountStatement()
         {
             return new AccountStatement();
+        }
+
+        private ITransactionsToPeriodsConverter GetTransactionsToPeriodsConverter()
+        {
+            return new TransactionsToPeriodsConverter();
         }
         #endregion
 

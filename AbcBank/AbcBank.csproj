@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application\CompoundInterestRate.cs" />
     <Compile Include="Business\Account.cs" />
     <Compile Include="Business\Bank.cs" />
     <Compile Include="Business\Customer.cs" />
@@ -50,6 +51,8 @@
     <Compile Include="Business\RateCalculators\CustomerInterestCalculator.cs" />
     <Compile Include="Business\RateCalculators\AccountCheckingRateCalculator.cs" />
     <Compile Include="Business\RateCalculators\IAccountRateCalculator.cs" />
+    <Compile Include="Business\RateCalculators\InvestmentPeriod.cs" />
+    <Compile Include="Business\RateCalculators\TransactionsToPeriodsConverter.cs" />
     <Compile Include="Business\StatementGenerators\AccountStatement.cs" />
     <Compile Include="Business\StatementGenerators\BankStatement.cs" />
     <Compile Include="Business\StatementGenerators\CustomerStatement.cs" />

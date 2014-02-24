@@ -22,6 +22,7 @@ namespace AbcBank.Business
     {
         double CurrentAmount { get; }
         List<ITransaction> Transactions { get; }
+        List<InvestmentPeriod> InvestmentPeriods { get; }
     }
 
     public class Account : IAccount, IAccountForRateCalculators
@@ -31,6 +32,7 @@ namespace AbcBank.Business
         ITransactionFactory transactionFactory;
         IAccountStatement accountStatement;
         IAccountRateCalculator rateCalculator;
+        ITransactionsToPeriodsConverter transactionsToPeriodsConverter;
 
         private readonly List<ITransaction> transactions = new List<ITransaction>();
 
@@ -53,14 +55,20 @@ namespace AbcBank.Business
         {
             get { return transactions; }
         }
+
+        public List<InvestmentPeriod> InvestmentPeriods 
+        {
+            get { return transactionsToPeriodsConverter.Calculate(transactions); } 
+        }
         #endregion
 
 
-        public Account(AccountTypes accountType, ITransactionFactory transactionFactory, IAccountStatement accountStatement, IAccountRateCalculator rateCalculator)
+        public Account(AccountTypes accountType, ITransactionFactory transactionFactory, IAccountStatement accountStatement, IAccountRateCalculator rateCalculator, ITransactionsToPeriodsConverter transactionsToPeriodsConverter)
         {
             this.transactionFactory = transactionFactory;
             this.accountStatement = accountStatement;
             this.rateCalculator = rateCalculator;
+            this.transactionsToPeriodsConverter = transactionsToPeriodsConverter;
 
             Name = string.Format("{0}_{1}", accountType, NEXT_ACCOUNT_NUMBER++);
         }

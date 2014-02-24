@@ -21,7 +21,7 @@ namespace AbcBank.Test.Business
             transactionFactoryStub = MockRepository.GenerateStub<ITransactionFactory>();
             accountStatementStub = MockRepository.GenerateStub<IAccountStatement>();
             accountRateCalculatorStub = MockRepository.GenerateStub<IAccountRateCalculator>();
-            return new Account(accountType, transactionFactoryStub, accountStatementStub, accountRateCalculatorStub);
+            return new Account(accountType, transactionFactoryStub, accountStatementStub, accountRateCalculatorStub, new TransactionsToPeriodsConverter());
         }
 
         [Test]

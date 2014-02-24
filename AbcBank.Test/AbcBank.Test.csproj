@@ -59,6 +59,7 @@
     <Compile Include="Business\RateCalculators\AccountSavingsRateCalculatorTest.cs" />
     <Compile Include="Business\RateCalculators\BankInterestCalculatorTest.cs" />
     <Compile Include="Business\RateCalculators\CustomerInterestCalculatorTest.cs" />
+    <Compile Include="Business\RateCalculators\TransactionsToPeriodsConverterTest.cs" />
     <Compile Include="Business\StatementGenerators\AccountStatementTest.cs" />
     <Compile Include="Business\StatementGenerators\BankStatementTest.cs" />
     <Compile Include="Business\StatementGenerators\CustomerStatementTest.cs" />
