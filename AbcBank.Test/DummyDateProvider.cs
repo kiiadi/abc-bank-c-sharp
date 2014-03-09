@@ -8,7 +8,7 @@ using AbcBank.Enums;
 
 namespace AbcBank.Test
 {
-    public class DummyDateProvider : iDateProvider
+    public class DummyDateProvider : IDateProvider
     {
         private static DummyDateProvider instance = new DummyDateProvider();
         private static DateTime _date;

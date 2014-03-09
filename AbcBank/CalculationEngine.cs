@@ -14,7 +14,7 @@ namespace AbcBank
     {
         private static readonly CalculationEngine engine = new CalculationEngine();
 
-        public static double CalculateInterestEarned(iAccount account, DateTime asofdate)
+        public static double CalculateInterestEarned(Account account, DateTime asofdate)
         {
             var a = (account as Account);
             var transactions = a.Transactions;
@@ -69,7 +69,7 @@ namespace AbcBank
                 }
 
                 entry.Principal = entry.Amount + entry.PreviousBalance;
-                entry.DailyInterest = DailyInterest(account, entry.Principal, withdrawalCount);
+                entry.DailyInterest = DailyInterest(account.DailyInterest, entry.Principal, withdrawalCount);
 
                 interestEarned += entry.DailyInterest;
 
@@ -84,26 +84,9 @@ namespace AbcBank
          *  Change Maxi-Savings accounts to have an interest rate of 5% assuming no withdrawals in the past 10 days otherwise 0.1%
          */
 
-        private static double DailyInterest(iAccount account, double principal, int withdrawalCount)
+        private static double DailyInterest(Func<double, int, double> accountCalculation, double principal, int withdrawalCount)
         {
-            var a = (account as Account);
-            switch (a.AccountType)
-            {
-                case AccountType.Checking:
-                    return (principal * 0.0001) / 365.0;
-                case AccountType.Savings:
-                    if (principal <= 1000)
-                        return (principal * 0.001) / 365.0;
-                    else
-                        return (1 + (principal - 1000) * 0.002) / 365.0;
-                case AccountType.MaxiSavings:
-                    if (withdrawalCount <= 0)
-                        return (principal * 0.05) / 365.0;
-                    else return (principal * 0.001) / 365.0;
-                default:
-                    throw new NotImplementedException();
-            }
-
+            return accountCalculation(principal, withdrawalCount);
         }
 
 

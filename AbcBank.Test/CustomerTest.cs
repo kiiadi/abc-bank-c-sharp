@@ -13,20 +13,20 @@ namespace AbcBank.Test
     public class CustomerTest
     {
 
-        iBank bank;
-        iCustomer customer;
-        iAccount savingsAccount;
-        iAccount checkingAccount;
-        iAccount maxiSavingAccount;
+        Bank bank;
+        Customer customer;
+        Account savingsAccount;
+        Account checkingAccount;
+        Account maxiSavingAccount;
 
         [SetUp]
         public void init()
         {
             bank = new Bank();
             customer = new Customer("Sung");
-            checkingAccount = new Account(AccountType.Checking);
-            savingsAccount = new Account(AccountType.Savings);
-            maxiSavingAccount = new Account(AccountType.MaxiSavings);
+            checkingAccount = new CheckingAccount();
+            savingsAccount = new SavingsAccount();
+            maxiSavingAccount = new MaxiSavingsAccount();
         }
 
         [Test] //Test customer statement generation

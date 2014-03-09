@@ -8,16 +8,16 @@ using System.Linq.Expressions;
 
 namespace AbcBank
 {
-    public class Bank: iBank
+    public class Bank : IBank
     {
-        private List<iCustomer> Customers;
+        private List<Customer> Customers;
 
         public Bank()
         {
-            Customers = new List<iCustomer>();
+            Customers = new List<Customer>();
         }
 
-        public void AddCustomer(iCustomer customer)
+        public void AddCustomer(Customer customer)
         {
             Customers.Add(customer);
         }

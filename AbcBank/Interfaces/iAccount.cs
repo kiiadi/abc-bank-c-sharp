@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AbcBank.Interfaces
 {
-    public interface iAccount
+    public interface IAccount
     {
         void Deposit(double amount);
         void Deposit(double amount, DateTime depositDate);
@@ -15,7 +15,7 @@ namespace AbcBank.Interfaces
         double InterestEarned();
         double InterestEarned(DateTime now);
 
-        //double DailyInterest();
+        double DailyInterest(double principal, int withdrawalCount);
 
         double Balance();
 

@@ -7,11 +7,11 @@ using AbcBank.Enums;
 
 namespace AbcBank.Interfaces
 {
-    public interface iCustomer
+    public interface ICustomer
     {
-        void OpenAccount(iAccount account);
+        void OpenAccount(IAccount account);
         string GetStatement();
         int GetNumberOfAccounts();
-        TransferResult TransferFunds(iAccount accountFrom, iAccount accountTo, double amount);
+        TransferResult TransferFunds(IAccount accountFrom, IAccount accountTo, double amount);
     }
 }

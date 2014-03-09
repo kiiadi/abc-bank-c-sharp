@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AbcBank.Interfaces
 {
-    public interface iTransaction
+    public interface ITransaction
     {
     }
 }

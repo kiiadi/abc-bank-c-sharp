@@ -8,7 +8,7 @@ using AbcBank.Enums;
 
 namespace AbcBank
 {
-    public class Transaction: iTransaction
+    public class Transaction: ITransaction
     {
         public readonly double Amount;
         public readonly TransactionType TransactionType;

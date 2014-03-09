@@ -14,27 +14,27 @@ namespace AbcBank.Test
     {
         private static readonly double DOUBLE_DELTA = 1e-15;
 
-        iBank bank;
-        iCustomer customer;
-        iAccount account;
-        iAccount savingsAccount;
-        iAccount checkingAccount;
-        iAccount maxiSavingAccount;
+        Bank bank;
+        Customer customer;
+        Account account;
+        Account savingsAccount;
+        Account checkingAccount;
+        Account maxiSavingAccount;
 
         [SetUp]
         public void init()
         {
             bank = new Bank();
             customer = new Customer("Sung");
-            checkingAccount = new Account(AccountType.Checking);
-            savingsAccount = new Account(AccountType.Savings);
-            maxiSavingAccount = new Account(AccountType.MaxiSavings);
+            checkingAccount = new CheckingAccount();
+            savingsAccount = new SavingsAccount();
+            maxiSavingAccount = new MaxiSavingsAccount();
         }
 
         [Test]
         public void TestCustomerSummary()
         {            
-            account = new Account(AccountType.Checking);
+            account = new CheckingAccount();
             customer.OpenAccount(account);
             bank.AddCustomer(customer);
 

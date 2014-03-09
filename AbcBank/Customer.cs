@@ -10,10 +10,10 @@ using System.Linq.Expressions;
 
 namespace AbcBank
 {
-    public class Customer : iCustomer
+    public class Customer: ICustomer
     {
         private String _name;
-        private List<iAccount> _accounts;
+        private List<IAccount> _accounts;
 
         public String Name
         {
@@ -23,10 +23,10 @@ namespace AbcBank
         public Customer(String name)
         {
             this._name = name;
-            this._accounts = new List<iAccount>();
+            this._accounts = new List<IAccount>();
         }
 
-        public void OpenAccount(iAccount account)
+        public void OpenAccount(IAccount account)
         {
             if (account is Account)
             {
@@ -50,7 +50,7 @@ namespace AbcBank
             //return accounts.Sum(x => x.InterestEarned(now));
         }
 
-        public TransferResult TransferFunds(iAccount accountFrom, iAccount accountTo, double amount)
+        public TransferResult TransferFunds(IAccount accountFrom, IAccount accountTo, double amount)
         {
             try
             {
@@ -90,18 +90,7 @@ namespace AbcBank
             var statement = new StringBuilder();
 
             //Translate to pretty account type
-            switch (account.AccountType)
-            {
-                case AccountType.Checking:
-                    statement.AppendLine("Checking Account");
-                    break;
-                case AccountType.Savings:
-                    statement.AppendLine("Savings Account");
-                    break;
-                case AccountType.MaxiSavings:
-                    statement.AppendLine("Maxi Savings Account");
-                    break;
-            }
+            statement.AppendLine(account.AccountType());
 
             //Now total up all the transactions
             foreach (Transaction t in account.Transactions)

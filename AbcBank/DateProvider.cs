@@ -7,7 +7,7 @@ using AbcBank.Interfaces;
 
 namespace AbcBank
 {
-    public class DateProvider: iDateProvider
+    public class DateProvider: IDateProvider
     {
         private static DateProvider _instance = new DateProvider();
 

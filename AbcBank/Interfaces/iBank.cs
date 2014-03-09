@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace AbcBank.Interfaces
 {
-    public interface iBank
+    public interface IBank
     {
-        void AddCustomer(iCustomer customer);
+        void AddCustomer(Customer customer);
         string CustomerSummary();        
         double TotalInterestPaid();
         double TotalInterestPaid(DateTime now);
