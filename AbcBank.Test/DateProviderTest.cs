@@ -8,17 +8,13 @@ using System.Threading.Tasks;
 namespace AbcBank.Test
 {
     [TestFixture]
-    public class TransactionTest
+    public class DateProviderTest
     {
         [Test]
-        public void TestCreateTransaction()
+        public void TestDummyDateProvider()
         {
             DummyDateProvider.SetNow("1/1/2001");
-
-            Transaction t = new Transaction(5, DummyDateProvider.GetInstance().Now());
-            Assert.AreEqual(true, t is Transaction);
             Assert.AreEqual("1/1/2001", DummyDateProvider.GetInstance().Now().ToShortDateString());
         }
-
     }
 }

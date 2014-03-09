@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AbcBank.Interfaces;
 
 namespace AbcBank
 {
-    public class DateProvider
+    public class DateProvider: IDateProvider
     {
-        private static DateProvider instance = null;
+        private static DateProvider _instance = new DateProvider();
 
-        public static DateProvider getInstance()
+        public static DateProvider GetInstance()
         {
-            if (instance == null)
-                instance = new DateProvider();
-            return instance;
+            return _instance;
         }
 
-        public DateTime now()
+        public DateTime Now()
         {
             return DateTime.Now;
         }

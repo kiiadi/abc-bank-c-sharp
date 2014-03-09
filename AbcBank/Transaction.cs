@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AbcBank.Interfaces;
+using AbcBank.Enums;
 
 namespace AbcBank
 {
-    public class Transaction
+    public class Transaction: ITransaction
     {
-        public readonly double amount;
+        public readonly double Amount;
+        public readonly TransactionType TransactionType;
+        public readonly DateTime TransactionDate;
 
-        private DateTime transactionDate;
-
-        public Transaction(double amount)
+        public Transaction(double amount, DateTime transactionDate)
         {
-            this.amount = amount;
-            this.transactionDate = DateProvider.getInstance().now();
+            this.Amount = amount;
+            this.TransactionType = (amount < 0 ? TransactionType.Withdrawal : TransactionType.Deposit);
+            this.TransactionDate = transactionDate;
         }
 
     }

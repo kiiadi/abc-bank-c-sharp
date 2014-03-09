@@ -3,26 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AbcBank.Interfaces;
+using AbcBank.Enums;
 
 namespace AbcBank
 {
-    public class Account
+    public abstract class Account: IAccount
     {
+        public List<Transaction> Transactions;
 
-        public const int CHECKING = 0;
-        public const int SAVINGS = 1;
-        public const int MAXI_SAVINGS = 2;
-
-        private readonly int accountType;
-        public List<Transaction> transactions;
-
-        public Account(int accountType)
+        public Account()
         {
-            this.accountType = accountType;
-            this.transactions = new List<Transaction>();
+            this.Transactions = new List<Transaction>();
         }
 
-        public void deposit(double amount)
+        public abstract string AccountType();
+
+        public virtual void Deposit(double amount)
         {
             if (amount <= 0)
             {
@@ -30,11 +27,11 @@ namespace AbcBank
             }
             else
             {
-                transactions.Add(new Transaction(amount));
+                Deposit(amount, DateProvider.GetInstance().Now());
             }
         }
 
-        public void withdraw(double amount)
+        public virtual void Deposit(double amount, DateTime depositDate)
         {
             if (amount <= 0)
             {
@@ -42,50 +39,58 @@ namespace AbcBank
             }
             else
             {
-                transactions.Add(new Transaction(-amount));
+                Transactions.Add(new Transaction(amount, depositDate));
             }
         }
 
-        public double interestEarned()
+        public virtual void Withdraw(double amount)
         {
-            double amount = sumTransactions();
-            switch (accountType)
+            if (amount <= 0)
             {
-                case SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.001;
-                    else
-                        return 1 + (amount - 1000) * 0.002;
-                // case SUPER_SAVINGS:
-                //     if (amount <= 4000)
-                //         return 20;
-                case MAXI_SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.02;
-                    if (amount <= 2000)
-                        return 20 + (amount - 1000) * 0.05;
-                    return 70 + (amount - 2000) * 0.1;
-                default:
-                    return amount * 0.001;
+                throw new ArgumentException("amount must be greater than zero");
+            }
+            else
+            {
+                Withdraw(amount, DateProvider.GetInstance().Now());
             }
         }
 
-        public double sumTransactions()
+
+        public virtual void Withdraw(double amount, DateTime withdrawalDate)
         {
-            return checkIfTransactionsExist(true);
+            if (amount <= 0)
+            {
+                throw new ArgumentException("amount must be greater than zero");
+            }
+            else
+            {
+                Transactions.Add(new Transaction(-amount, withdrawalDate));
+            }
         }
 
-        private double checkIfTransactionsExist(bool checkAll)
+        public virtual double InterestEarned()
+        {
+            double amount = Balance();
+            return amount * 0.001;
+
+        }
+
+        public virtual double InterestEarned(DateTime now)
+        {
+            return CalculationEngine.CalculateInterestEarned(this, now);
+        }
+
+        public virtual double Balance()
         {
             double amount = 0.0;
-            foreach (Transaction t in transactions)
-                amount += t.amount;
+            foreach (Transaction t in Transactions)
+                amount += t.Amount;
             return amount;
         }
-
-        public int getAccountType()
+        
+        public virtual double DailyInterest(double principal, int withdrawalCount)
         {
-            return accountType;
+            return (principal * 0.0001) / 365.0;
         }
 
     }

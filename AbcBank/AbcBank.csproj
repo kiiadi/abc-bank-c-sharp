@@ -41,9 +41,22 @@
   <ItemGroup>
     <Compile Include="Account.cs" />
     <Compile Include="Bank.cs" />
+    <Compile Include="CalculationEngine.cs" />
+    <Compile Include="CheckingAccount.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="DateProvider.cs" />
+    <Compile Include="Enums\AccountType.cs" />
+    <Compile Include="Enums\TransactionType.cs" />
+    <Compile Include="Enums\TransferResult.cs" />
+    <Compile Include="Interfaces\IDateProvider.cs" />
+    <Compile Include="Interfaces\IAccount.cs" />
+    <Compile Include="Interfaces\IBank.cs" />
+    <Compile Include="Interfaces\ICustomer.cs" />
+    <Compile Include="Interfaces\ITransaction.cs" />
+    <Compile Include="MaxiSavingsAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SavingsAccount.cs" />
+    <Compile Include="Struct\StatementEntry.cs" />
     <Compile Include="Transaction.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

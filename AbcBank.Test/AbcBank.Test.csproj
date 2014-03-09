@@ -45,7 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BankTest.cs" />
+    <Compile Include="AccountTest.cs" />
     <Compile Include="CustomerTest.cs" />
+    <Compile Include="DateProviderTest.cs" />
+    <Compile Include="DummyDateProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransactionTest.cs" />
   </ItemGroup>

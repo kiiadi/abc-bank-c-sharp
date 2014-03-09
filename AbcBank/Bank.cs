@@ -3,52 +3,56 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AbcBank.Interfaces;
+using System.Linq.Expressions;
 
 namespace AbcBank
 {
-    public class Bank
+    public class Bank : IBank
     {
-        private List<Customer> customers;
+        private List<Customer> Customers;
 
         public Bank()
         {
-            customers = new List<Customer>();
+            Customers = new List<Customer>();
         }
 
-        public void addCustomer(Customer customer)
+        public void AddCustomer(Customer customer)
         {
-            customers.Add(customer);
+            Customers.Add(customer);
         }
 
-        public String customerSummary()
+        public String CustomerSummary()
         {
             String summary = "Customer Summary";
-            foreach (Customer c in customers)
-                summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
+            foreach (Customer c in Customers)
+                summary += "\n - " + c.Name + " (" + Format(c.GetNumberOfAccounts(), "account") + ")";
             return summary;
         }
 
         //Make sure correct plural of word is created based on the number passed in:
         //If number passed in is 1 just return the word otherwise add an 's' at the end
-        private String format(int number, String word)
+        private String Format(int number, String word)
         {
             return number + " " + (number == 1 ? word : word + "s");
         }
 
-        public double totalInterestPaid()
+        public double TotalInterestPaid()
         {
-            double total = 0;
-            foreach (Customer c in customers)
-                total += c.totalInterestEarned();
-            return total;
+            return Customers.Sum(x => (x as Customer).TotalInterestEarned());
         }
 
-        public String getFirstCustomer()
+        public double TotalInterestPaid(DateTime now)
+        {
+            return Customers.Sum(x => (x as Customer).TotalInterestEarned(now));
+        }
+
+        public String GetFirstCustomer()
         {
             try
             {
-                customers = null;
-                return customers[0].getName();
+                Customers = null;
+                return (Customers[0] as Customer).Name;
             }
             catch (Exception e)
             {
