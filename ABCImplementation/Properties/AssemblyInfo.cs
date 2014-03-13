@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AbcBank")]
-[assembly: AssemblyDescription("Library")]
+[assembly: AssemblyTitle("ABCImplementation")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("John DSouza")]
-[assembly: AssemblyProduct("AbcBank")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("ABCImplementation")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("35d63caa-3b34-412d-8fe7-9a85e57723cb")]
+[assembly: Guid("bc6f32e3-a09f-41f0-96a7-dbda1fc619d8")]
 
 // Version information for an assembly consists of the following four values:
 //

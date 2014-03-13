@@ -1,18 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A94DB827-A5D5-4F1A-84B5-58E2570C8169}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{F597B5AE-7615-4B4F-9955-980BBDDF30CB}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AbcBank</RootNamespace>
-    <AssemblyName>AbcBank</AssemblyName>
+    <RootNamespace>ABCImplementation</RootNamespace>
+    <AssemblyName>ABCImplementation</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -39,19 +41,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Implementation\CheckingAccount.cs" />
-    <Compile Include="Implementation\Customers.cs" />
-    <Compile Include="Implementation\MainBank.cs" />
-    <Compile Include="Implementation\MaxiSavingsAccount.cs" />
-    <Compile Include="Implementation\SavingsAccount.cs" />
-    <Compile Include="Interfaces\AccountsInterface\IAccountsInterface.cs" />
-    <Compile Include="Interfaces\AccountsInterface\ICheckingInterface.cs" />
-    <Compile Include="Interfaces\AccountsInterface\IMaxiSavingsInterface.cs" />
-    <Compile Include="Interfaces\AccountsInterface\ISavingsInterface.cs" />
-    <Compile Include="Interfaces\CustomerInterface\ICustomerInterface.cs" />
-    <Compile Include="Utilities\DateProvider.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\Transactions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AbcBank\AbcBank.csproj">
+      <Project>{a94db827-a5d5-4f1a-84b5-58e2570c8169}</Project>
+      <Name>AbcBank</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

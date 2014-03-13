@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using AbcBank.Implementation;
+using AbcBank.AccountsInterface;
+using AbcBank.CustomerInterface;
 
 namespace AbcBank.Test
 {
@@ -15,23 +18,24 @@ namespace AbcBank.Test
         [Test]
         public void customerSummary()
         {
-            Bank bank = new Bank();
-            Customer john = new Customer("John");
-            john.openAccount(new Account(Account.CHECKING));
-            bank.addCustomer(john);
+            MainBank bank = new MainBank();
+            ICustomerInterface Henry = new Customers("Henry");
+            IAccountsInterface HenrySavings = new SavingsAccount();
+            bank.AddCustomer(Henry);
+            Henry.AddAccount(HenrySavings);
 
-            Assert.AreEqual("Customer Summary\n - John (1 account)", bank.customerSummary());
+            Assert.AreEqual("Customer Summary\r\n - Customer Henry maintains 1 account\r\n", bank.CustomerSummary());
         }
 
         [Test]
         public void checkingAccount()
         {
-            Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.CHECKING);
-            Customer bill = new Customer("Bill").openAccount(checkingAccount);
-            bank.addCustomer(bill);
-
-            checkingAccount.deposit(100.0);
+            MainBank bank = new MainBank();
+            ICustomerInterface James = new Customers("James");
+            IAccountsInterface JamesChecking = new CheckingAccount();
+            bank.AddCustomer(James);
+            James.AddAccount(JamesChecking);
+            James.Deposit(JamesChecking, 100.00);
 
             Assert.AreEqual(0.1, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
@@ -39,11 +43,12 @@ namespace AbcBank.Test
         [Test]
         public void savings_account()
         {
-            Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
-
-            checkingAccount.deposit(1500.0);
+            MainBank bank = new MainBank();
+            ICustomerInterface Jerry = new Customers("Jerry");
+            IAccountsInterface JerrySavings = new SavingsAccount();
+            bank.AddCustomer(Jerry);
+            Jerry.AddAccount(JerrySavings);
+            Jerry.Deposit(JerrySavings, 1500.00);
 
             Assert.AreEqual(2.0, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
@@ -51,13 +56,14 @@ namespace AbcBank.Test
         [Test]
         public void maxi_savings_account()
         {
-            Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.MAXI_SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
+            MainBank bank = new MainBank();
+            ICustomerInterface Paul = new Customers("Paul");
+            IAccountsInterface PaulMaxiSavings = new MaxiSavingsAccount();
+            bank.AddCustomer(Paul);
+            Paul.AddAccount(PaulMaxiSavings);
+            Paul.Deposit(PaulMaxiSavings, 3000.00);
 
-            checkingAccount.deposit(3000.0);
-
-            Assert.AreEqual(170.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual(0.0, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
 
     }
