@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,55 +12,93 @@ namespace AbcBank.Test
     [TestFixture]
     public class BankTest
     {
-        private static readonly double DOUBLE_DELTA = 1e-15;
+         /** Pull unit test variables from a configuration file **/
+        static NameValueCollection testSettings;
 
-        [Test]
-        public void customerSummary()
+        /** Account object to be used throughtout the test **/
+        Account checkingAccount = new Account(Account.CHECKING);
+        Account savingsAccount = new Account(Account.SAVINGS);
+        Account maxiSavingsAccount = new Account(Account.MAXI_SAVINGS);
+
+        /** Returned the value of the passed configuration file key **/
+        public string GetSettings(string key)
         {
-            Bank bank = new Bank();
-            Customer john = new Customer("John");
-            john.openAccount(new Account(Account.CHECKING));
-            bank.addCustomer(john);
-
-            Assert.AreEqual("Customer Summary\n - John (1 account)", bank.customerSummary());
+            return testSettings[key];
         }
 
-        [Test]
-        public void checkingAccount()
+        /** Construct a customer test object **/
+        public BankTest()
         {
-            Bank bank = new Bank();
+            /** Account object to be used throughtout the test **/
             Account checkingAccount = new Account(Account.CHECKING);
-            Customer bill = new Customer("Bill").openAccount(checkingAccount);
-            bank.addCustomer(bill);
+            Account savingsAccount = new Account(Account.SAVINGS);
+            Account maxiSavingsAccount = new Account(Account.MAXI_SAVINGS);
 
-            checkingAccount.deposit(100.0);
+            /** Initialize the testSettings object to the collection of configuration file key/value pairs **/
+            testSettings = ConfigurationManager.AppSettings as NameValueCollection;
+        }
 
-            Assert.AreEqual(0.1, bank.totalInterestPaid(), DOUBLE_DELTA);
+        //BASIC Condition Tests - expected conditions that fit typical input/output parameter(s) and/or result(s)
+        [Test]
+        public void BankObjectCreation()
+        {
+            /** Bank object to be used throughout the test **/
+            Bank okoronkwoBank = new Bank("Okoronkwo");
+
+            /** Create customer and opewn accounts **/
+            Customer chin = new Customer("Chin");
+            chin.openAccount(checkingAccount).openAccount(savingsAccount).openAccount(maxiSavingsAccount);
+
+            /** Add a cusomer to the bank **/
+            okoronkwoBank.addCustomer(chin);
+
+            /**Assert that the customer has been added **/
+            Assert.AreEqual("Customer Summary\n - Chin (3 accounts)", okoronkwoBank.customerSummary());
         }
 
         [Test]
-        public void savings_account()
+        public void BankInterestPaid()
         {
-            Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
+            /** Bank object to be used throughout the test **/
+            Bank okoronkwoBank = new Bank("Okoronkwo");
 
-            checkingAccount.deposit(1500.0);
+            /** Create customer and opewn accounts **/
+            Customer chin = new Customer("Chin");
+            checkingAccount.deposit(1.00);
+            savingsAccount.deposit(1.00);
+            maxiSavingsAccount.deposit(1.00);
+            chin.openAccount(checkingAccount).openAccount(savingsAccount).openAccount(maxiSavingsAccount);
 
-            Assert.AreEqual(2.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            /** Add a cusomer to the bank **/
+            okoronkwoBank.addCustomer(chin);
+
+            /**Assert that the interest paid is being correctly calculated **/
+            Assert.That(okoronkwoBank.totalInterestPaid().Equals(((1 * .001 * 365) + (1 * .001 * 365) + (1 * .05 * 365))));
         }
 
-        [Test]
-        public void maxi_savings_account()
+        //----THE TESTS BELOW WOULD HAVE BEEN IMPLEMENTED, BUT OUT OF TIME ...
+
+        //BOUNDARY Condition Tests - edge conditions that do not fit typical input/output parameter(s) and/or result(s)
+
+        //INVERSE Condition Tests - when conditions are reversed the outcome should still be valid
+
+        //CROSS CHECK Tests - the end result can be traced back to the beginning values
+
+        //FORCED ERROR Tests - keys obvious values are incorrect
+
+        //PERFORMANCE Tests - stree test of the code (NOT USUALLY APPLICABLE TO NONE WEB HOSTED APPLICATIONS)
+        //---For desktop machine performance will often hinge on the hardware running the application
+
+        [TearDown]
+        public void CleanUpTest()
         {
-            Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.MAXI_SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
-
-            checkingAccount.deposit(3000.0);
-
-            Assert.AreEqual(170.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            //No unmanged test object(s) to garbage collect
         }
 
+        [TestFixtureTearDown]
+        public void CleanUpTestFixture()
+        {
+            //No unmanged test fixture object(s) to garbage collect
+        }
     }
 }

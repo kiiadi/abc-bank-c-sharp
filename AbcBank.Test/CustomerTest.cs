@@ -1,8 +1,7 @@
 ﻿using System;
+using System.Configuration;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.Specialized;
 using NUnit.Framework;
 
 namespace AbcBank.Test
@@ -10,57 +9,133 @@ namespace AbcBank.Test
     [TestFixture]
     public class CustomerTest
     {
+        /** Pull unit test variables from a configuration file **/
+        static NameValueCollection testSettings;
 
-        [Test] //Test customer statement generation
-        public void testApp()
+        /** Returned the value of the passed configuration file key **/
+        public string GetSettings(string key)
         {
+            return testSettings[key];
+        }
 
-            Account checkingAccount = new Account(Account.CHECKING);
-            Account savingsAccount = new Account(Account.SAVINGS);
+        /** Construct a customer test object **/
+        public CustomerTest()
+        {
+            /** Initialize the testSettings object to the collection of configuration file key/value pairs **/
+            testSettings = ConfigurationManager.AppSettings as NameValueCollection;
+        }
 
-            Customer henry = new Customer("Henry").openAccount(checkingAccount).openAccount(savingsAccount);
+        /** Customer object with theree accounts to be used throughout the test **/
+        Customer chin = new Customer("Chin");
 
-            checkingAccount.deposit(100.0);
-            savingsAccount.deposit(4000.0);
-            savingsAccount.withdraw(200.0);
+        /** Account objects to be used throughout the test **/
+        Account checkingAccount = new Account(Account.CHECKING);
+        Account savingsAccount = new Account(Account.SAVINGS);
+        Account maxiSavingsAccount = new Account(Account.MAXI_SAVINGS);
 
-            Assert.AreEqual("Statement for Henry\n" +
+
+        //BASIC Condition Tests - expected conditions that fit typical input/output parameter(s) and/or result(s)
+        [Test]
+        public void CustomerObjectCreation()
+        {
+            /** Account objects to be used throughout the test **/
+            checkingAccount = new Account(Account.CHECKING);
+            savingsAccount = new Account(Account.SAVINGS);
+            maxiSavingsAccount = new Account(Account.MAXI_SAVINGS);
+            chin = new Customer("Chin");
+
+            /** Deposit funds into each account **/
+            checkingAccount.deposit(1.00);
+            savingsAccount.deposit(1.00);
+            maxiSavingsAccount.deposit(1.00);
+            chin.openAccount(checkingAccount).openAccount(savingsAccount).openAccount(maxiSavingsAccount);
+
+            //Assert that each object is initialized correctly
+            Assert.AreEqual("Chin", chin.getName());
+            Assert.AreEqual(3, chin.getNumberOfAccounts());
+            Assert.That(chin.totalInterestEarned().Equals(((1 * .001 * 365) + (1 * .001 * 365) + (1 * .05 * 365))));
+        }
+
+        [Test]
+        public void CustomerStatement()
+        {
+            /** Account objects to be used throughout the test **/
+            checkingAccount = new Account(Account.CHECKING);
+            savingsAccount = new Account(Account.SAVINGS);
+            maxiSavingsAccount = new Account(Account.MAXI_SAVINGS);
+            chin = new Customer("Chin");
+
+            /** Deposit funds into each account **/
+            checkingAccount.deposit(1.00);
+            savingsAccount.deposit(1.00);
+            maxiSavingsAccount.deposit(1.00);
+            chin.openAccount(checkingAccount).openAccount(savingsAccount).openAccount(maxiSavingsAccount);
+
+            //Assert that the statement outputs correctly
+            Assert.AreEqual("Statement for Chin\n" +
                     "\n" +
                     "Checking Account\n" +
-                    "  deposit $100.00\n" +
-                    "Total $100.00\n" +
+                    "  deposit $1.00\n" +
+                    "Total $1.00\n" +
                     "\n" +
                     "Savings Account\n" +
-                    "  deposit $4,000.00\n" +
-                    "  withdrawal $200.00\n" +
-                    "Total $3,800.00\n" +
+                    "  deposit $1.00\n" +
+                    "Total $1.00\n" +
                     "\n" +
-                    "Total In All Accounts $3,900.00", henry.getStatement());
+                    "Maxi Savings Account\n" +
+                    "  deposit $1.00\n" +
+                    "Total $1.00\n" +
+                    "\n" +
+                    "Total In All Accounts $3.00", chin.getStatement());
+
         }
 
         [Test]
-        public void testOneAccount()
+        public void CustomerTransfer()
         {
-            Customer oscar = new Customer("Oscar").openAccount(new Account(Account.SAVINGS));
-            Assert.AreEqual(1, oscar.getNumberOfAccounts());
+            /** Account objects to be used throughout the test **/
+            checkingAccount = new Account(Account.CHECKING);
+            savingsAccount = new Account(Account.SAVINGS);
+            maxiSavingsAccount = new Account(Account.MAXI_SAVINGS);
+            chin = new Customer("Chin");
+
+            /** Deposit funds into each account **/
+            checkingAccount.deposit(1.00);
+            savingsAccount.deposit(1.00);
+            maxiSavingsAccount.deposit(1.00);
+            chin.openAccount(checkingAccount).openAccount(savingsAccount).openAccount(maxiSavingsAccount);
+
+            /** Transfer funds from checking to savings **/
+            chin.transferFunds(ref checkingAccount, ref savingsAccount, 1.00);
+
+            /** Assert that funds were transferred from checking to svings **/
+            Assert.That(checkingAccount.sumTransactions().Equals(0.00));
+            Assert.That(savingsAccount.sumTransactions().Equals(2.00));
         }
 
-        [Test]
-        public void testTwoAccount()
+        //----THE TESTS BELOW WOULD HAVE BEEN IMPLEMENTED, BUT OUT OF TIME ...
+
+        //BOUNDARY Condition Tests - edge conditions that do not fit typical input/output parameter(s) and/or result(s)
+
+        //INVERSE Condition Tests - when conditions are reversed the outcome should still be valid
+
+        //CROSS CHECK Tests - the end result can be traced back to the beginning values
+
+        //FORCED ERROR Tests - keys obvious values are incorrect
+
+        //PERFORMANCE Tests - stree test of the code (NOT USUALLY APPLICABLE TO NONE WEB HOSTED APPLICATIONS)
+        //---For desktop machine performance will often hinge on the hardware running the application
+
+        [TearDown]
+        public void CleanUpTest()
         {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
-            Assert.AreEqual(2, oscar.getNumberOfAccounts());
+            //No unmanged test object(s) to garbage collect
         }
 
-        [Ignore]
-        public void testThreeAcounts()
+        [TestFixtureTearDown]
+        public void CleanUpTestFixture()
         {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
-            Assert.AreEqual(3, oscar.getNumberOfAccounts());
+            //No unmanged test fixture object(s) to garbage collect
         }
     }
 }
