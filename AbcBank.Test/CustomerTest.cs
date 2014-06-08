@@ -38,28 +38,44 @@ namespace AbcBank.Test
                     "Total In All Accounts $3,900.00", henry.getStatement());
         }
 
-        [Test]
+        [Test] //Test whether transactions exist 
+        public void testTransactionsExist()
+        {
+            Account checkingAccount = new Account(Account.CHECKING);
+            Customer henry = new Customer("Henry").openAccount(checkingAccount);
+            checkingAccount.deposit(100.0);
+            Assert.AreEqual(true, checkingAccount.checkIfTransactionsExist());
+        }
+
+        [Test] //Test whether transactions do not exist
+        public void testTransactionsNotExist()
+        {
+            Account checkingAccount = new Account(Account.CHECKING);
+            Customer henry = new Customer("Henry").openAccount(checkingAccount);
+            Assert.AreEqual(false, checkingAccount.checkIfTransactionsExist());
+        }
+
+        [Test] // Test the creation of one account for one customer
         public void testOneAccount()
         {
             Customer oscar = new Customer("Oscar").openAccount(new Account(Account.SAVINGS));
             Assert.AreEqual(1, oscar.getNumberOfAccounts());
         }
 
-        [Test]
+        [Test] // Test the creation of two different accounts for one customer
         public void testTwoAccount()
         {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
+            Customer oscar = new Customer("Oscar").openAccount(new Account(Account.SAVINGS));
             oscar.openAccount(new Account(Account.CHECKING));
             Assert.AreEqual(2, oscar.getNumberOfAccounts());
         }
 
-        [Ignore]
+        [Test] // Test the creation of three different accounts for one customer
         public void testThreeAcounts()
         {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
+            Customer oscar = new Customer("Oscar").openAccount(new Account(Account.SAVINGS));
             oscar.openAccount(new Account(Account.CHECKING));
+            oscar.openAccount(new Account(Account.MAXI_SAVINGS));
             Assert.AreEqual(3, oscar.getNumberOfAccounts());
         }
     }

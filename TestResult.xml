@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!--This file represents the results of running a test suite-->
+<test-results name="C:\Users\josh\Desktop\test\abc-bank-c-sharp\AbcBank.Test\bin\Debug\AbcBank.Test.nunit" total="21" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2014-06-07" time="21:21:15">
+  <environment nunit-version="2.6.3.13283" clr-version="2.0.50727.4984" os-version="Microsoft Windows NT 6.1.7600.0" platform="Win32NT" cwd="C:\Program Files (x86)\NUnit 2.6.3\bin" machine-name="SOHO" user="josh" user-domain="soho" />
+  <culture-info current-culture="en-US" current-uiculture="en-US" />
+  <test-suite type="Project" name="C:\Users\josh\Desktop\test\abc-bank-c-sharp\AbcBank.Test\bin\Debug\AbcBank.Test.nunit" executed="True" result="Success" success="True" time="0.265" asserts="0">
+    <results>
+      <test-suite type="Assembly" name="C:\Users\josh\Desktop\test\abc-bank-c-sharp\AbcBank.Test\bin\Debug\AbcBank.Test.dll" executed="True" result="Success" success="True" time="0.240" asserts="0">
+        <results>
+          <test-suite type="Namespace" name="AbcBank" executed="True" result="Success" success="True" time="0.239" asserts="0">
+            <results>
+              <test-suite type="Namespace" name="Test" executed="True" result="Success" success="True" time="0.238" asserts="0">
+                <results>
+                  <test-suite type="TestFixture" name="BankTest" executed="True" result="Success" success="True" time="0.174" asserts="0">
+                    <results>
+                      <test-case name="AbcBank.Test.BankTest.testAccount_misDeposit" executed="True" result="Success" success="True" time="0.046" asserts="0" />
+                      <test-case name="AbcBank.Test.BankTest.testAccount_misWithdraw" executed="True" result="Success" success="True" time="0.001" asserts="0" />
+                      <test-case name="AbcBank.Test.BankTest.testcheckingAccount" executed="True" result="Success" success="True" time="0.028" asserts="1" />
+                      <test-case name="AbcBank.Test.BankTest.testcustomerSummary" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+                      <test-case name="AbcBank.Test.BankTest.testmaxi_savings_account" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                      <test-case name="AbcBank.Test.BankTest.testmulti_customer_multi_account_Summary" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                      <test-case name="AbcBank.Test.BankTest.testmulti_customerSummary" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                      <test-case name="AbcBank.Test.BankTest.testopenCheckingAndSavingsAccount" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                      <test-case name="AbcBank.Test.BankTest.testsavings_account" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                      <test-case name="AbcBank.Test.BankTest.testtransferBetweenCheckingAndSavingsAccount" executed="True" result="Success" success="True" time="0.012" asserts="1" />
+                      <test-case name="AbcBank.Test.BankTest.testtransferBetweenCheckingAndSavingsAccountFAIL" executed="True" result="Success" success="True" time="0.002" asserts="0" />
+                      <test-case name="AbcBank.Test.BankTest.testWithdraw" executed="True" result="Success" success="True" time="0.005" asserts="1" />
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="CustomerTest" executed="True" result="Success" success="True" time="0.034" asserts="0">
+                    <results>
+                      <test-case name="AbcBank.Test.CustomerTest.testApp" executed="True" result="Success" success="True" time="0.004" asserts="1" />
+                      <test-case name="AbcBank.Test.CustomerTest.testOneAccount" executed="True" result="Success" success="True" time="0.003" asserts="1" />
+                      <test-case name="AbcBank.Test.CustomerTest.testThreeAcounts" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                      <test-case name="AbcBank.Test.CustomerTest.testTransactionsExist" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                      <test-case name="AbcBank.Test.CustomerTest.testTransactionsNotExist" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                      <test-case name="AbcBank.Test.CustomerTest.testTwoAccount" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                    </results>
+                  </test-suite>
+                  <test-suite type="TestFixture" name="TransactionTest" executed="True" result="Success" success="True" time="0.013" asserts="0">
+                    <results>
+                      <test-case name="AbcBank.Test.TransactionTest.testAmountIsDouble" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                      <test-case name="AbcBank.Test.TransactionTest.testTransactionDateisDateTime" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                      <test-case name="AbcBank.Test.TransactionTest.transaction" executed="True" result="Success" success="True" time="0.001" asserts="1" />
+                    </results>
+                  </test-suite>
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>

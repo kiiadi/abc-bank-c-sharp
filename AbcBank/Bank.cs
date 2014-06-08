@@ -20,6 +20,7 @@ namespace AbcBank
             customers.Add(customer);
         }
 
+        // generate text-based customer summary for all customers
         public String customerSummary()
         {
             String summary = "Customer Summary";
@@ -35,14 +36,16 @@ namespace AbcBank
             return number + " " + (number == 1 ? word : word + "s");
         }
 
+        // calculate total interest paid to all accounts belonging to all customers
         public double totalInterestPaid()
         {
-            double total = 0;
+            double total = 0.0;
             foreach (Customer c in customers)
                 total += c.totalInterestEarned();
             return total;
         }
 
+        // determine name of bank's first customer
         public String getFirstCustomer()
         {
             try
@@ -56,5 +59,7 @@ namespace AbcBank
                 return "Error";
             }
         }
+
+
     }
 }

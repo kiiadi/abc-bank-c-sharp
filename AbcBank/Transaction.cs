@@ -18,5 +18,16 @@ namespace AbcBank
             this.transactionDate = DateProvider.getInstance().now();
         }
 
+        public double getAmount()
+        {
+            return amount;
+        }
+
+        public DateTime getTransactionDate()
+        {
+            return transactionDate;
+        }
+
+
     }
 }
