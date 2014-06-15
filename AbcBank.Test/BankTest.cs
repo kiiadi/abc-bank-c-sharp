@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace AbcBank.Test
@@ -11,54 +7,116 @@ namespace AbcBank.Test
     public class BankTest
     {
         private static readonly double DOUBLE_DELTA = 1e-15;
+        Bank bank;
 
         [Test]
-        public void customerSummary()
+        public void CustomerSummaryWithOneAccount()
         {
-            Bank bank = new Bank();
+            bank = new Bank();
             Customer john = new Customer("John");
-            john.openAccount(new Account(Account.CHECKING));
-            bank.addCustomer(john);
+            john.OpenAccount(new Account(AccountType.Checking));
+            bank.AddCustomer(john);
 
-            Assert.AreEqual("Customer Summary\n - John (1 account)", bank.customerSummary());
+            Assert.AreEqual("Customer Summary - Total Customers: 1\n - John (1 account)", bank.CustomerSummary());
         }
 
         [Test]
-        public void checkingAccount()
+        public void CustomerSummaryWithPlurals()
         {
-            Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.CHECKING);
-            Customer bill = new Customer("Bill").openAccount(checkingAccount);
-            bank.addCustomer(bill);
+            bank = new Bank();
+            Customer john = new Customer("John");
+            john.OpenAccount(new Account(AccountType.Checking));
+            john.OpenAccount(new Account(AccountType.Checking));
+            bank.AddCustomer(john);
 
-            checkingAccount.deposit(100.0);
+            Customer brian = new Customer("Brian");
+            brian.OpenAccount(new Account(AccountType.Savings));
+            brian.OpenAccount(new Account(AccountType.Maxi_Savings));
+            brian.OpenAccount(new Account(AccountType.Checking));
+            bank.AddCustomer(brian);
 
-            Assert.AreEqual(0.1, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual("Customer Summary - Total Customers: 2\n - John (2 accounts)\n - Brian (3 accounts)", bank.CustomerSummary());
         }
 
         [Test]
-        public void savings_account()
+        public void CheckingAccountInterestEarned()
         {
-            Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
+            bank = new Bank();
+            Account account = new Account(AccountType.Checking);
+            Customer bill = new Customer("Bill");
+            bill.OpenAccount(account);
+            bank.AddCustomer(bill);
+            account.Deposit(100.0);
 
-            checkingAccount.deposit(1500.0);
-
-            Assert.AreEqual(2.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual(0.1, bank.TotalInterestPaid(), DOUBLE_DELTA);
         }
 
         [Test]
-        public void maxi_savings_account()
+        public void SavingsAccountInterestEarned()
         {
-            Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.MAXI_SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
+            bank = new Bank();
+            Account account = new Account(AccountType.Savings);
+            Customer bill = new Customer("Bill");
+            bill.OpenAccount(account);
+            bank.AddCustomer(bill);
 
-            checkingAccount.deposit(3000.0);
+            account.Deposit(1500.0);
+            Assert.AreEqual(2.0, bank.TotalInterestPaid(), DOUBLE_DELTA);
 
-            Assert.AreEqual(170.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            account.Withdraw(500.0);  //Test with amount accruing less interest
+            Assert.AreEqual(1.0, bank.TotalInterestPaid(), DOUBLE_DELTA);
         }
 
+        [Test]
+        public void MaxiSavingsAaccountInterestEarned()
+        {
+            bank = new Bank();
+            Account account = new Account(AccountType.Maxi_Savings);
+            Customer bill = new Customer("Bill");
+            bill.OpenAccount(account);
+            bank.AddCustomer(bill);
+
+            account.Deposit(3000.0);
+            Assert.AreEqual(3000.0 * 0.001, bank.TotalInterestPaid(), DOUBLE_DELTA);
+
+            account.Deposit(2000.0);
+            account.Transactions[1].Date -= TimeSpan.FromDays(11);
+            Console.WriteLine(bank.TotalInterestPaid());
+            Assert.AreEqual((3000.0 + 2000.0) * 0.05, bank.TotalInterestPaid(), DOUBLE_DELTA);
+        }
+
+        [Test]
+        public void BankTotalInterestPaid()
+        {
+            bank = new Bank();
+            Account billAccount = new Account(AccountType.Checking);
+            Customer bill = new Customer("Bill");
+            bill.OpenAccount(billAccount);
+            bank.AddCustomer(bill);
+            billAccount.Deposit(100.0);
+
+            Account johnAccount = new Account(AccountType.Savings);
+            Customer john = new Customer("John");
+            john.OpenAccount(johnAccount);
+            bank.AddCustomer(john);
+
+            johnAccount.Deposit(1500.0);
+            //Test with amount accruing less interest
+            johnAccount.Withdraw(500.0);
+
+            Account oscarAccount = new Account(AccountType.Maxi_Savings);
+            Customer oscar = new Customer("Oscar");
+            oscar.OpenAccount(oscarAccount);
+            bank.AddCustomer(oscar);
+
+            oscarAccount.Deposit(3000.0);
+            oscarAccount.Deposit(2000.0);
+
+            oscarAccount.Transactions[1].Date -= TimeSpan.FromDays(11);
+
+            String report = "Total Interest Paid by Bank: " + (0.1 + 1.0 + (3000.0 + 2000.0) * 0.05).ToString();
+            Console.WriteLine(report);
+            Assert.AreEqual(report, bank.TotalInterestPaidReport());
+        }
     }
 }

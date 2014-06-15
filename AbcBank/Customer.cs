@@ -1,95 +1,77 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbcBank
 {
     public class Customer
     {
-        private String name;
-        private List<Account> accounts;
+        private String fName;
+        public String Name { get { return fName; } set { fName = value; } }
+
+        private List<Account> Accounts;
+
+        public int NumberOfAccounts
+        {
+            get { return Accounts.Count; }
+        }
 
         public Customer(String name)
         {
-            this.name = name;
-            this.accounts = new List<Account>();
+            Name = name;
+            Accounts = new List<Account>();
         }
 
-        public String getName()
+        public void OpenAccount(Account account)
         {
-            return name;
+            Accounts.Add(account);
         }
 
-        public Customer openAccount(Account account)
-        {
-            accounts.Add(account);
-            return this;
-        }
-
-        public int getNumberOfAccounts()
-        {
-            return accounts.Count;
-        }
-
-        public double totalInterestEarned()
+        public double TotalInterestEarned()
         {
             double total = 0;
-            foreach (Account a in accounts)
-                total += a.interestEarned();
+            foreach (Account a in Accounts)
+                total += a.InterestEarned();
             return total;
         }
 
-        /*******************************
-         * This method gets a statement
-         *********************************/
-        public String getStatement()
+        /// <summary>
+        /// Gets statement that shows transactions and totals for each of this customer's accounts
+        /// </summary>
+        /// <returns>
+        /// String containig the statement
+        /// </returns>
+        public String GetStatement()
         {
-            //JIRA-123 Change by Joe Bloggs 29/7/1988 start
             String statement = null; //reset statement to null here
-            //JIRA-123 Change by Joe Bloggs 29/7/1988 end
-            statement = "Statement for " + name + "\n";
+            statement = "Statement for " + Name + "\n";
             double total = 0.0;
-            foreach (Account a in accounts)
+            foreach (Account a in Accounts)
             {
-                statement += "\n" + statementForAccount(a) + "\n";
-                total += a.sumTransactions();
+                statement += "\n" + StatementForAccount(a) + "\n";
+                total += a.Balance;
             }
-            statement += "\nTotal In All Accounts " + toDollars(total);
+            statement += "\nTotal In All Accounts " + ToDollars(total);
             return statement;
         }
 
-        private String statementForAccount(Account a)
+        private String StatementForAccount(Account a)
         {
             String s = "";
 
-            //Translate to pretty account type
-            switch (a.getAccountType())
-            {
-                case Account.CHECKING:
-                    s += "Checking Account\n";
-                    break;
-                case Account.SAVINGS:
-                    s += "Savings Account\n";
-                    break;
-                case Account.MAXI_SAVINGS:
-                    s += "Maxi Savings Account\n";
-                    break;
-            }
+            s = a.Type.ToString().Replace('_', '-') + " Account\n";
 
             //Now total up all the transactions
             double total = 0.0;
-            foreach (Transaction t in a.transactions)
+            foreach (Transaction t in a.Transactions)
             {
-                s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.amount) + "\n";
-                total += t.amount;
+                s += "  " + (t.Amount < 0 ? "withdrawal" : "deposit") + " " + ToDollars(t.Amount) + "\n";
+                total += t.Amount;
             }
-            s += "Total " + toDollars(total);
+            s += "Total " + ToDollars(total);
             return s;
         }
 
-        private String toDollars(double d)
+        private String ToDollars(double d)
         {
             return String.Format("${0:N2}", Math.Abs(d));
         }
