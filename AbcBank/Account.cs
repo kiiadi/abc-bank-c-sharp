@@ -6,8 +6,8 @@ namespace AbcBank
 {
     public class Account
     {
-        public const string AmountIsNotPositiveMessage = "amount must be positive";
-        public const string AmountExceedsBalanceMessage = "withdraw: amount {0} exceeds balance {1}";
+        private const string AmountIsNotPositiveMessage = "amount must be positive";
+        private const string AmountExceedsBalanceMessage = "withdraw: amount {0} exceeds balance {1}";
 
         private AccountType fType;
         public AccountType Type { get { return fType; } }
@@ -81,39 +81,82 @@ namespace AbcBank
             Transactions.Add(new Transaction(-amount));
         }
 
+        public void TransferToAccount(Account accountTo, double amount)
+        {
+            if (amount <= 0)
+            {
+                throw new ArgumentException(Account.AmountIsNotPositiveMessage);
+            }
+
+            if (amount > Balance)
+            {
+                String message = String.Format(Account.AmountExceedsBalanceMessage, amount, Balance);
+                throw new ArgumentException(message);
+            }
+
+            Transactions.Add(new Transaction(-amount));
+            accountTo.Transactions.Add(new Transaction(amount));
+        }
+
         /// <summary>
         ///     Calculates SIMPLE interest by type of the account
         /// </summary>
         /// <returns>
         ///     Total historical interest earned
         /// </returns>
-        /// TODO Replace the below calculations per pending requarement:
+        /// 20140614 Implements requarement:
         ///     "Interest rates should accrue daily (incl. weekends), rates *below* are per-annum" 
         public double InterestEarned()
         {
-            double amount = Balance;
-            switch (Type)
+            const double checkingDailyRate = 0.001 / 365;
+            const double savingsFirst1000DaylyRate = 0.001 / 365;
+            const double savingsAfter1000DaylyRate = 0.002 / 365;
+            const double maxi_savingsWithdrawalLast10DaylyRate = 0.001 / 365;
+            const double maxi_savingsNoWithdrawalDaylyRate = 0.05 / 365;
+
+            if (Transactions.Count == 0)
+                return 0.0;
+
+            double amount = 0.0;
+            double balance = 0.0;
+            DateTime lastLowInterestDay = Transactions[0].Date.AddDays(-1);  //only for maxi-saving 
+
+            for (int i = 0; i < Transactions.Count; i++)
             {
-                case AccountType.Checking:
-                    amount *= 0.001;
-                    break;
-                case AccountType.Savings:
-                    if (amount <= 1000)
-                        amount *= 0.001;
-                    else
-                        amount = 1000 * 0.001 + (amount - 1000) * 0.002;
-                    break;
-                case AccountType.Maxi_Savings:
-                //Implements requirement
-                //  "Change **Maxi-Savings accounts** to have an interest rate of 5%,
-                //   assuming no withdrawals in the past 10 days, otherwise 0.1%"
-                //   TODO Replace temporary change below with true accrue daily per TODO Task for the method
-                    if (DateTime.Now - Transactions.Last().Date > TimeSpan.FromDays(10))
-                        amount *= 0.05;
-                    else
-                        amount *= 0.001;
-                    break;
+                balance += Transactions[i].Amount;
+                DateTime startDate = Transactions[i].Date;
+                DateTime endDate = i + 1 < Transactions.Count ? Transactions[i + 1].Date : DateTime.Now;
+                int days = (endDate - startDate).Days;
+
+                switch (Type)
+                {
+                    case AccountType.Checking:
+                        amount += balance * checkingDailyRate * days;
+                        break;
+                    case AccountType.Savings:
+                        if (balance <= 1000)
+                            amount += balance * savingsFirst1000DaylyRate * days;
+                        else
+                            amount += (1000 * savingsFirst1000DaylyRate + (balance - 1000) * savingsAfter1000DaylyRate) * days;
+                        break;
+                    case AccountType.Maxi_Savings:
+                        if (Transactions[i].Amount < 0)
+                            lastLowInterestDay = Transactions[i].Date + TimeSpan.FromDays(10);
+
+                        if ((lastLowInterestDay - startDate).Days > 0)
+                        {
+                            DateTime lastIncludedDay = endDate < lastLowInterestDay ? endDate : lastLowInterestDay;
+                            amount += balance * maxi_savingsWithdrawalLast10DaylyRate * (lastIncludedDay - startDate).Days;
+                        }
+                        if ((endDate - lastLowInterestDay).Days > 0)
+                        {
+                            DateTime firstIncludedDay = startDate > lastLowInterestDay ? startDate : lastLowInterestDay;
+                            amount += balance * maxi_savingsNoWithdrawalDaylyRate * (endDate - firstIncludedDay).Days;
+                        }
+                        break;
+                }
             }
+
             return amount;
         }
     }

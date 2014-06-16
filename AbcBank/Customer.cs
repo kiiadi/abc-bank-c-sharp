@@ -50,7 +50,7 @@ namespace AbcBank
                 statement += "\n" + StatementForAccount(a) + "\n";
                 total += a.Balance;
             }
-            statement += "\nTotal In All Accounts " + ToDollars(total);
+            statement += "\nTotal In All Accounts " + Utility.ToDollars(total);
             return statement;
         }
 
@@ -64,16 +64,11 @@ namespace AbcBank
             double total = 0.0;
             foreach (Transaction t in a.Transactions)
             {
-                s += "  " + (t.Amount < 0 ? "withdrawal" : "deposit") + " " + ToDollars(t.Amount) + "\n";
+                s += "  " + (t.Amount < 0 ? "withdrawal" : "deposit") + " " + Utility.ToDollars(t.Amount) + "\n";
                 total += t.Amount;
             }
-            s += "Total " + ToDollars(total);
+            s += "Total " + Utility.ToDollars(total);
             return s;
-        }
-
-        private String ToDollars(double d)
-        {
-            return String.Format("${0:N2}", Math.Abs(d));
         }
     }
 }
