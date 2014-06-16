@@ -1,92 +1,163 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbcBank
 {
     public class Account
     {
+        private const string AmountIsNotPositiveMessage = "amount must be positive";
+        private const string AmountExceedsBalanceMessage = "withdraw: amount {0} exceeds balance {1}";
 
-        public const int CHECKING = 0;
-        public const int SAVINGS = 1;
-        public const int MAXI_SAVINGS = 2;
+        private AccountType fType;
+        public AccountType Type { get { return fType; } }
 
-        private readonly int accountType;
-        public List<Transaction> transactions;
-
-        public Account(int accountType)
+        private double fBalance;
+        public double Balance
         {
-            this.accountType = accountType;
-            this.transactions = new List<Transaction>();
+            get
+            {
+                fBalance = 0;
+                foreach (Transaction t in Transactions)
+                    fBalance += t.Amount;
+                return fBalance;
+            }
         }
 
-        public void deposit(double amount)
+        public List<Transaction> Transactions;
+
+        public Account(AccountType accountType)
+        {
+            fType = accountType;
+            Transactions = new List<Transaction>();
+        }
+
+        ///
+        /// <summary>
+        ///     Credit the account with the amount
+        /// </summary>
+        /// <param>
+        ///     name="amount" - deposited amount
+        /// </param>
+        /// Exceptions:
+        ///   System.ArgumentException:
+        ///       amount is not positive.
+        ///       
+        public void Deposit(double amount)
         {
             if (amount <= 0)
             {
-                throw new ArgumentException("amount must be greater than zero");
+                throw new ArgumentException(AmountIsNotPositiveMessage);
             }
-            else
-            {
-                transactions.Add(new Transaction(amount));
-            }
+
+            Transactions.Add(new Transaction(amount));
         }
 
-        public void withdraw(double amount)
+        ///
+        /// <summary>
+        ///     Debit the account with the amount
+        /// </summary>
+        /// <param>
+        ///     name="amount" - withdrawn amount
+        /// </param>
+        /// Exceptions:
+        ///   System.ArgumentException:
+        ///       amount is not positive.
+        ///       amount exceeds balance.
+        ///       
+        public void Withdraw(double amount)
         {
             if (amount <= 0)
             {
-                throw new ArgumentException("amount must be greater than zero");
+                throw new ArgumentException(AmountIsNotPositiveMessage);
             }
-            else
+
+            if (amount > Balance)
             {
-                transactions.Add(new Transaction(-amount));
+                String message = String.Format(Account.AmountExceedsBalanceMessage, amount, Balance);
+                throw new ArgumentException(message);
             }
+
+            Transactions.Add(new Transaction(-amount));
         }
 
-        public double interestEarned()
+        public void TransferToAccount(Account accountTo, double amount)
         {
-            double amount = sumTransactions();
-            switch (accountType)
+            if (amount <= 0)
             {
-                case SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.001;
-                    else
-                        return 1 + (amount - 1000) * 0.002;
-                // case SUPER_SAVINGS:
-                //     if (amount <= 4000)
-                //         return 20;
-                case MAXI_SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.02;
-                    if (amount <= 2000)
-                        return 20 + (amount - 1000) * 0.05;
-                    return 70 + (amount - 2000) * 0.1;
-                default:
-                    return amount * 0.001;
+                throw new ArgumentException(Account.AmountIsNotPositiveMessage);
             }
+
+            if (amount > Balance)
+            {
+                String message = String.Format(Account.AmountExceedsBalanceMessage, amount, Balance);
+                throw new ArgumentException(message);
+            }
+
+            Transactions.Add(new Transaction(-amount));
+            accountTo.Transactions.Add(new Transaction(amount));
         }
 
-        public double sumTransactions()
+        /// <summary>
+        ///     Calculates SIMPLE interest by type of the account
+        /// </summary>
+        /// <returns>
+        ///     Total historical interest earned
+        /// </returns>
+        /// 20140614 Implements requarement:
+        ///     "Interest rates should accrue daily (incl. weekends), rates *below* are per-annum" 
+        public double InterestEarned()
         {
-            return checkIfTransactionsExist(true);
-        }
+            const double checkingDailyRate = 0.001 / 365;
+            const double savingsFirst1000DaylyRate = 0.001 / 365;
+            const double savingsAfter1000DaylyRate = 0.002 / 365;
+            const double maxi_savingsWithdrawalLast10DaylyRate = 0.001 / 365;
+            const double maxi_savingsNoWithdrawalDaylyRate = 0.05 / 365;
 
-        private double checkIfTransactionsExist(bool checkAll)
-        {
+            if (Transactions.Count == 0)
+                return 0.0;
+
             double amount = 0.0;
-            foreach (Transaction t in transactions)
-                amount += t.amount;
+            double balance = 0.0;
+            DateTime lastLowInterestDay = Transactions[0].Date.AddDays(-1);  //only for maxi-saving 
+
+            for (int i = 0; i < Transactions.Count; i++)
+            {
+                balance += Transactions[i].Amount;
+                DateTime startDate = Transactions[i].Date;
+                DateTime endDate = i + 1 < Transactions.Count ? Transactions[i + 1].Date : DateTime.Now;
+                int days = (endDate - startDate).Days;
+
+                switch (Type)
+                {
+                    case AccountType.Checking:
+                        amount += balance * checkingDailyRate * days;
+                        break;
+                    case AccountType.Savings:
+                        if (balance <= 1000)
+                            amount += balance * savingsFirst1000DaylyRate * days;
+                        else
+                            amount += (1000 * savingsFirst1000DaylyRate + (balance - 1000) * savingsAfter1000DaylyRate) * days;
+                        break;
+                    case AccountType.Maxi_Savings:
+                        if (Transactions[i].Amount < 0)
+                            lastLowInterestDay = Transactions[i].Date + TimeSpan.FromDays(10);
+
+                        if ((lastLowInterestDay - startDate).Days > 0)
+                        {
+                            DateTime lastIncludedDay = endDate < lastLowInterestDay ? endDate : lastLowInterestDay;
+                            amount += balance * maxi_savingsWithdrawalLast10DaylyRate * (lastIncludedDay - startDate).Days;
+                        }
+                        if ((endDate - lastLowInterestDay).Days > 0)
+                        {
+                            DateTime firstIncludedDay = startDate > lastLowInterestDay ? startDate : lastLowInterestDay;
+                            amount += balance * maxi_savingsNoWithdrawalDaylyRate * (endDate - firstIncludedDay).Days;
+                        }
+                        break;
+                }
+            }
+
             return amount;
         }
-
-        public int getAccountType()
-        {
-            return accountType;
-        }
-
     }
 }
