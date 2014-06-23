@@ -9,7 +9,16 @@ namespace AbcBank
     public class Customer
     {
         private String name;
+        public String Name
+        {
+            get { return name; }
+        }
+
         private List<Account> accounts;
+        public List<Account> Accounts
+        {
+            get { return accounts; }
+        }
 
         public Customer(String name)
         {
@@ -17,41 +26,27 @@ namespace AbcBank
             this.accounts = new List<Account>();
         }
 
-        public String getName()
-        {
-            return name;
-        }
-
+    
         public Customer openAccount(Account account)
         {
-            accounts.Add(account);
+            Accounts.Add(account);
             return this;
-        }
-
-        public int getNumberOfAccounts()
-        {
-            return accounts.Count;
         }
 
         public double totalInterestEarned()
         {
             double total = 0;
-            foreach (Account a in accounts)
+            foreach (Account a in Accounts)
                 total += a.interestEarned();
             return total;
         }
 
-        /*******************************
-         * This method gets a statement
-         *********************************/
         public String getStatement()
         {
-            //JIRA-123 Change by Joe Bloggs 29/7/1988 start
-            String statement = null; //reset statement to null here
-            //JIRA-123 Change by Joe Bloggs 29/7/1988 end
-            statement = "Statement for " + name + "\n";
+            String statement;
+            statement = "Statement for " + Name + "\n";
             double total = 0.0;
-            foreach (Account a in accounts)
+            foreach (Account a in Accounts)
             {
                 statement += "\n" + statementForAccount(a) + "\n";
                 total += a.sumTransactions();
@@ -62,28 +57,14 @@ namespace AbcBank
 
         private String statementForAccount(Account a)
         {
-            String s = "";
+            String s = a.getStringRepresentationForAccount(a);
 
-            //Translate to pretty account type
-            switch (a.getAccountType())
-            {
-                case Account.CHECKING:
-                    s += "Checking Account\n";
-                    break;
-                case Account.SAVINGS:
-                    s += "Savings Account\n";
-                    break;
-                case Account.MAXI_SAVINGS:
-                    s += "Maxi Savings Account\n";
-                    break;
-            }
-
-            //Now total up all the transactions
+            //Total all transactions for the customer
             double total = 0.0;
-            foreach (Transaction t in a.transactions)
+            foreach (Transaction t in a.Transactions)
             {
-                s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.amount) + "\n";
-                total += t.amount;
+                s += "  " + (t.Amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.Amount) + "\n";
+                total += t.Amount;
             }
             s += "Total " + toDollars(total);
             return s;

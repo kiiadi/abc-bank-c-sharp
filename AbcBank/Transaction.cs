@@ -8,14 +8,25 @@ namespace AbcBank
 {
     public class Transaction
     {
-        public readonly double amount;
+        private readonly double amount;
 
-        private DateTime transactionDate;
+        public double Amount
+        {
+            get { return amount; }
+        } 
+
+        private DateTime utcDate;
+
+        public DateTime UtcDate
+        {
+            get { return utcDate; }
+            set { utcDate = value; }
+        }
 
         public Transaction(double amount)
         {
             this.amount = amount;
-            this.transactionDate = DateProvider.getInstance().now();
+            this.utcDate = DateTime.UtcNow;
         }
 
     }

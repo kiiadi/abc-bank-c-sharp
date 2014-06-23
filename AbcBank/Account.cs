@@ -9,16 +9,24 @@ namespace AbcBank
     public class Account
     {
 
-        public const int CHECKING = 0;
-        public const int SAVINGS = 1;
-        public const int MAXI_SAVINGS = 2;
+        public enum AccountType {CHECKING, SAVINGS, MAXI_SAVINGS};
 
-        private readonly int accountType;
-        public List<Transaction> transactions;
+        private List<Transaction> transactions;
 
-        public Account(int accountType)
+        public List<Transaction> Transactions
         {
-            this.accountType = accountType;
+            get { return transactions; }
+        }
+
+        private AccountType type;
+        public AccountType Type
+        {
+            get { return type; }
+        }
+
+        public Account(AccountType type)
+        {
+            this.type = type;
             this.transactions = new List<Transaction>();
         }
 
@@ -49,43 +57,63 @@ namespace AbcBank
         public double interestEarned()
         {
             double amount = sumTransactions();
-            switch (accountType)
+            double interestEarned = 0.0;
+            switch (Type)
             {
-                case SAVINGS:
+                case AccountType.SAVINGS:
                     if (amount <= 1000)
-                        return amount * 0.001;
+                        interestEarned = amount * 0.001;
                     else
-                        return 1 + (amount - 1000) * 0.002;
-                // case SUPER_SAVINGS:
-                //     if (amount <= 4000)
-                //         return 20;
-                case MAXI_SAVINGS:
+                        interestEarned = 1 + (amount - 1000) * 0.002;
+                    break;
+                case AccountType.MAXI_SAVINGS:
                     if (amount <= 1000)
-                        return amount * 0.02;
-                    if (amount <= 2000)
-                        return 20 + (amount - 1000) * 0.05;
-                    return 70 + (amount - 2000) * 0.1;
+                        interestEarned = amount * 0.02;
+                    else if (amount <= 2000)
+                        interestEarned = 20 + (amount - 1000) * 0.05;
+                    else
+                        interestEarned = 70 + (amount - 2000) * .1;
+                    break;
+                case AccountType.CHECKING:
+                    interestEarned = amount * 0.001;
+                    break;
                 default:
-                    return amount * 0.001;
+                    break;
             }
+            return interestEarned;
         }
 
         public double sumTransactions()
         {
-            return checkIfTransactionsExist(true);
-        }
-
-        private double checkIfTransactionsExist(bool checkAll)
-        {
             double amount = 0.0;
             foreach (Transaction t in transactions)
-                amount += t.amount;
+                amount += t.Amount;
             return amount;
         }
 
-        public int getAccountType()
+        private bool checkIfTransactionsExist()
         {
-            return accountType;
+            return transactions.Count() > 0 ? true : false;
+        }
+
+        public string getStringRepresentationForAccount(Account a)
+        {
+            string strRet = string.Empty;
+            switch (a.Type)
+            {
+                case Account.AccountType.CHECKING:
+                    strRet += "Checking Account\n";
+                    break;
+                case Account.AccountType.SAVINGS:
+                    strRet += "Savings Account\n";
+                    break;
+                case Account.AccountType.MAXI_SAVINGS:
+                    strRet += "Maxi Savings Account\n";
+                    break;
+                default:
+                    throw new Exception("Account type is not valid");
+            }
+            return strRet;
         }
 
     }
