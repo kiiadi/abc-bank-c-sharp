@@ -96,10 +96,10 @@ namespace AbcBank
             return transactions.Count() > 0 ? true : false;
         }
 
-        public string getStringRepresentationForAccount(Account a)
+        public string getStringRepresentationForAccount()
         {
             string strRet = string.Empty;
-            switch (a.Type)
+            switch (Type)
             {
                 case Account.AccountType.CHECKING:
                     strRet += "Checking Account\n";

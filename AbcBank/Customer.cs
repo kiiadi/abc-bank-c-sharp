@@ -26,7 +26,6 @@ namespace AbcBank
             this.accounts = new List<Account>();
         }
 
-    
         public Customer openAccount(Account account)
         {
             Accounts.Add(account);
@@ -57,7 +56,7 @@ namespace AbcBank
 
         private String statementForAccount(Account a)
         {
-            String s = a.getStringRepresentationForAccount(a);
+            String s = a.getStringRepresentationForAccount();
 
             //Total all transactions for the customer
             double total = 0.0;

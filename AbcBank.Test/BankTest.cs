@@ -23,6 +23,10 @@ namespace AbcBank.Test
             john.openAccount(new Account(Account.AccountType.SAVINGS));
             john.openAccount(new Account(Account.AccountType.MAXI_SAVINGS));
             Assert.AreEqual("Customer Summary\n - John (3 accounts)", bank.customerSummary());
+            Customer bill = new Customer("Bill");
+            bill.openAccount(new Account(Account.AccountType.MAXI_SAVINGS));
+            bank.addCustomer(bill);
+            Assert.AreEqual("Customer Summary\n - John (3 accounts)\n - Bill (1 account)", bank.customerSummary());
         }
 
         [Test]
