@@ -7,12 +7,55 @@ using NUnit.Framework;
 
 namespace AbcBank.Test
 {
+    // Using naming convention <Method-Name Under Test>_<Scenario>_<Expected-Outcome>
     [TestFixture]
     public class CustomerTest
     {
 
+        [Test]
+        public void CustomerConstructor_CreateCustomer_Instance()
+        {
+            Customer c = new Customer("Mike");
+            Assert.AreEqual(c.Name,"Mike");
+            Assert.NotNull(c.Accounts);
+        }
+
+        [Test]
+        public void openAccount_CreateCustomerWithAccount_Account()
+        {
+            Customer c = new Customer("Mike");
+            Account account = new Account(Account.AccountType.CHECKING);
+            c.openAccount(account);
+            Assert.AreEqual(c.Accounts.Count(), 1);
+            Assert.NotNull(c.Accounts.Where(a => a.Type == Account.AccountType.CHECKING).FirstOrDefault());
+        }
+
+        [Test]
+        public void openAccount_CreateCustomerWithSameAccountTypeTwice_Exception()
+        {
+            Customer c = new Customer("Mike");
+            Account account = new Account(Account.AccountType.CHECKING);
+            c.openAccount(account);
+            account = new Account(Account.AccountType.CHECKING);
+            Assert.Throws(typeof(Exception), ()=>{c.openAccount(account);});
+        }
+
+        [Test]
+        public void totalInterestEarned_CreateCustomerWithAccounts_InterestIsEarned()
+        {
+            Customer c = new Customer("Mike");
+            Account account = new Account(Account.AccountType.CHECKING);
+            c.openAccount(account);
+            account.deposit(500);
+            account = new Account(Account.AccountType.SAVINGS);
+            c.openAccount(account);
+            account.deposit(500);
+            account.deposit(1000);
+            Assert.AreEqual(c.totalInterestEarned(), 2.5);
+        }
+
         [Test] 
-        public void testCustomerStatementGeneration()
+        public void getStatement_CreateCustomerWithAccount_Statement()
         {
 
             Account checkingAccount = new Account(Account.AccountType.CHECKING);
@@ -36,47 +79,16 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void testOneAccount()
+        public void transferFunds_TransferBetweenTwoCustomerAccounts_AccountsDebitedAndCredited()
         {
-            Customer oscar = new Customer("Oscar").openAccount(new Account(Account.AccountType.SAVINGS));
-            Assert.AreEqual(oscar.Name, "Oscar");
-            Assert.AreEqual(oscar.Accounts.Count(), 1);
-            Assert.AreEqual(oscar.Accounts[0].Type, Account.AccountType.SAVINGS);
-            oscar.Accounts[0].deposit(100.00);
-            Assert.AreEqual(oscar.Accounts[0].sumTransactions(), 100);
-        }
-
-        [Test]
-        public void testTwoAccount()
-        {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.AccountType.SAVINGS));
-            oscar.openAccount(new Account(Account.AccountType.CHECKING));
-            Assert.AreEqual(oscar.Name, "Oscar");
-            Assert.AreEqual(oscar.Accounts.Count(), 2);
-            Assert.AreEqual(oscar.Accounts.Where(a => a.Type == Account.AccountType.SAVINGS).Count(), 1);
-            Assert.AreEqual(oscar.Accounts.Where(a => a.Type == Account.AccountType.CHECKING).Count(), 1);
-            oscar.Accounts.Where(a => a.Type == Account.AccountType.CHECKING).FirstOrDefault().deposit(100.00);
-            oscar.Accounts.Where(a => a.Type == Account.AccountType.SAVINGS).FirstOrDefault().deposit(100.00);
-            Assert.AreEqual(oscar.Accounts.Select(x => x.sumTransactions()).Sum(), 200.0);
-        }
-
-        [Test]
-        public void testThreeAcounts()
-        {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.AccountType.SAVINGS));
-            oscar.openAccount(new Account(Account.AccountType.CHECKING));
-            oscar.openAccount(new Account(Account.AccountType.MAXI_SAVINGS));
-            Assert.AreEqual(oscar.Name, "Oscar");
-            Assert.AreEqual(oscar.Accounts.Count(), 3);
-            Assert.AreEqual(oscar.Accounts.Where(a => a.Type == Account.AccountType.SAVINGS).Count(), 1);
-            Assert.AreEqual(oscar.Accounts.Where(a => a.Type == Account.AccountType.CHECKING).Count(), 1);
-            Assert.AreEqual(oscar.Accounts.Where(a => a.Type == Account.AccountType.MAXI_SAVINGS).Count(), 1);
-            oscar.Accounts.Where(a => a.Type == Account.AccountType.CHECKING).FirstOrDefault().deposit(100.00);
-            oscar.Accounts.Where(a => a.Type == Account.AccountType.SAVINGS).FirstOrDefault().deposit(100.00);
-            oscar.Accounts.Where(a => a.Type == Account.AccountType.MAXI_SAVINGS).FirstOrDefault().deposit(100.00);
-            Assert.AreEqual(oscar.Accounts.Select(x => x.sumTransactions()).Sum(), 300.00);
+            Account checkingAccount = new Account(Account.AccountType.CHECKING);
+            Account savingsAccount = new Account(Account.AccountType.SAVINGS);
+            Customer henry = new Customer("Henry").openAccount(checkingAccount).openAccount(savingsAccount);
+            checkingAccount.deposit(500.0);
+            savingsAccount.deposit(500.0);
+            henry.transferFunds(Account.AccountType.CHECKING, Account.AccountType.SAVINGS, 200);
+            Assert.AreEqual(checkingAccount.sumTransactions(), 300);
+            Assert.AreEqual(savingsAccount.sumTransactions(), 700);
         }
     }
 }

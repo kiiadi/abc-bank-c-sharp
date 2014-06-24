@@ -7,13 +7,14 @@ using NUnit.Framework;
 
 namespace AbcBank.Test
 {
+    // Using naming convention <Method-Name Under Test>_<Scenario>_<Expected-Outcome>
     [TestFixture]
     public class AccountTest
     {
         private static readonly double DOUBLE_DELTA = 1e-15;
 
         [Test]
-        public void creation()
+        public void Account_Constructor_InstanceCreated()
         {
             Account account = new Account(Account.AccountType.CHECKING);
             Assert.AreEqual(account.Type, Account.AccountType.CHECKING);
@@ -21,7 +22,7 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void deposit()
+        public void deposit_MakeDeposits_MoneyAddedToAccount()
         {
             Account account = new Account(Account.AccountType.CHECKING);
             account.deposit(100.50);
@@ -30,7 +31,7 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void withdraw()
+        public void withdraw_MakeWithdrawal_MoneyRemovedFromAccount()
         {
             Account account = new Account(Account.AccountType.CHECKING);
             account.deposit(9999.84);
@@ -40,7 +41,7 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void interestEarned()
+        public void interestEarned_MakeDeposit_InterestEarned()
         {
             Account account = new Account(Account.AccountType.CHECKING);
             account.deposit(500);
@@ -68,7 +69,7 @@ namespace AbcBank.Test
 
 
         [Test]
-        public void sumTransactions()
+        public void sumTransactions_CreateTransactions_SumOfTransactions()
         {
             Account account = new Account(Account.AccountType.CHECKING);
             account.deposit(9999.84);
@@ -78,7 +79,7 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void getStringRepresentationForAccount()
+        public void getStringRepresentationForAccount_AddAccounts_StringRepresentingAccounts()
         {
             Account account = new Account(Account.AccountType.CHECKING);
             Assert.AreEqual(account.getStringRepresentationForAccount(), "Checking Account\n");

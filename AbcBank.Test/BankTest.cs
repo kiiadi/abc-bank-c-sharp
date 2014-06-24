@@ -7,13 +7,14 @@ using NUnit.Framework;
 
 namespace AbcBank.Test
 {
+    // Using naming convention <Method-Name Under Test>_<Scenario>_<Expected-Outcome>
     [TestFixture]
     public class BankTest
     {
         private static readonly double DOUBLE_DELTA = 1e-15;
 
         [Test]
-        public void customerSummary()
+        public void customerSummary_CreateCustomersAndAccounts_CustomerSummary()
         {
             Bank bank = new Bank();
             Customer john = new Customer("John");
@@ -30,7 +31,7 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void checkingAccount()
+        public void checkingAccount_CreateCheckingAccount_CheckingAccountWithBalances_()
         {
             Bank bank = new Bank();
             Account checkingAccount = new Account(Account.AccountType.CHECKING);
@@ -49,7 +50,7 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void savings_account()
+        public void savingsAccount_CreateSavingAccount_SavingAccountWithBalances()
         {
             Bank bank = new Bank();
             Account savingsAccount = new Account(Account.AccountType.SAVINGS);
@@ -69,7 +70,7 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void maxi_savings_account()
+        public void maxiSavingsAccount_CreateMaxiSavingsAccount_MaxiSavingAccountWithBalances()
         {
             Bank bank = new Bank();
             Account maxiSavings = new Account(Account.AccountType.MAXI_SAVINGS);
@@ -85,6 +86,22 @@ namespace AbcBank.Test
             Assert.AreEqual(1.0, bank.totalInterestPaid(), DOUBLE_DELTA);
             maxiSavings.deposit(2000.0);
             Assert.AreEqual(75.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+        }
+
+        [Test]
+        public void getFirstCustomer_CreateBankWithCustomers_RetrieveFirstCustomer()
+        {
+            Bank bank = new Bank();
+            Account account = new Account(Account.AccountType.MAXI_SAVINGS);
+            Customer bill = new Customer("Bill").openAccount(account);
+            bank.addCustomer(bill);
+            account = new Account(Account.AccountType.MAXI_SAVINGS);
+            Customer joe = new Customer("Joe").openAccount(account);
+            bank.addCustomer(joe);
+            account = new Account(Account.AccountType.MAXI_SAVINGS);
+            Customer bob = new Customer("Bob").openAccount(account);
+            bank.addCustomer(bob);
+            Assert.AreEqual(bank.getFirstCustomer(), bill.Name);
         }
 
     }

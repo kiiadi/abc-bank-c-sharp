@@ -28,6 +28,8 @@ namespace AbcBank
 
         public Customer openAccount(Account account)
         {
+            if (Accounts.Where(a => a.Type == account.Type).Count() != 0)
+                throw new Exception(String.Format("Account type:{0} already exists for this customer", account.Type.ToString()));
             Accounts.Add(account);
             return this;
         }
@@ -54,6 +56,33 @@ namespace AbcBank
             return statement;
         }
 
+        public void transferFunds(Account.AccountType source, Account.AccountType destination, double amount)
+        {
+            Account acctFrom = Accounts.Where(a => a.Type == source).FirstOrDefault();
+            if (acctFrom == null)
+                throw new Exception("Cannot complete transfer. Source account does not exist");
+            Account acctDest = Accounts.Where(a => a.Type == destination).FirstOrDefault();
+            if (acctDest == null)
+                throw new Exception("Cannot complete transfer. Source account does not exist");
+            bool bAcctFromSuccess = false;
+            bool bAcctDestSuccess = false;
+            try
+            {
+                acctFrom.withdraw(amount);
+                bAcctFromSuccess = true;
+                acctDest.deposit(amount);
+                bAcctDestSuccess = true;
+            }
+            // roll back entire transaction if there was an exception
+            catch (Exception)
+            {
+                if (bAcctFromSuccess == true)
+                    acctFrom.deposit(amount);
+                if (bAcctDestSuccess)
+                    acctDest.withdraw(amount);
+            }
+        }
+
         private String statementForAccount(Account a)
         {
             String s = a.getStringRepresentationForAccount();
@@ -73,5 +102,6 @@ namespace AbcBank
         {
             return String.Format("${0:N2}", Math.Abs(d));
         }
+
     }
 }

@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace AbcBank.Test
 {
+    // Using naming convention <Method-Name Under Test>_<Scenario>_<Expected-Outcome>
     [TestFixture]
     public class TransactionTest
     {
         [Test]
-        public void transaction()
+        public void Transaction_Constructor_InstanceCreated()
         {
             Transaction t = new Transaction(5);
             Assert.AreEqual(true, t is Transaction);
