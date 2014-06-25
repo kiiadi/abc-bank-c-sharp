@@ -38,7 +38,7 @@ namespace AbcBank
             }
             else
             {
-                transactions.Add(new Transaction(amount));
+                transactions.Add(new Transaction(amount, Transaction.transactionType.DEPOSIT, DateTime.UtcNow));
             }
         }
 
@@ -50,37 +50,31 @@ namespace AbcBank
             }
             else
             {
-                transactions.Add(new Transaction(-amount));
+                transactions.Add(new Transaction(-amount, Transaction.transactionType.WITHDRAWAL, DateTime.UtcNow));
             }
         }
 
         public double interestEarned()
         {
-            double amount = sumTransactions();
+            double sumOfTrans = this.sumTransactions();
             double interestEarned = 0.0;
-            switch (Type)
+            switch (this.Type)
             {
-                case AccountType.SAVINGS:
-                    if (amount <= 1000)
-                        interestEarned = amount * 0.001;
-                    else
-                        interestEarned = 1 + (amount - 1000) * 0.002;
-                    break;
-                case AccountType.MAXI_SAVINGS:
-                    if (amount <= 1000)
-                        interestEarned = amount * 0.02;
-                    else if (amount <= 2000)
-                        interestEarned = 20 + (amount - 1000) * 0.05;
-                    else
-                        interestEarned = 70 + (amount - 2000) * .1;
-                    break;
                 case AccountType.CHECKING:
-                    interestEarned = amount * 0.001;
-                    break;
-                default:
-                    break;
+                    return sumTransactions() * (Constants.Checking_IntRate / 365);
+
+                case AccountType.SAVINGS:
+                    if (sumOfTrans <= 1000)
+                        return sumOfTrans * (Constants.MaxiSavings_IntRate_TranOcurredLessTenDays / 365);
+                    else
+                        return (1 / 365) + (sumOfTrans - 1000) * (Constants.Savings_IntRate_BalGreater1000 / 365);
+
+                case AccountType.MAXI_SAVINGS:
+                    return Transactions.Where(x => x.UtcDate <= DateTime.UtcNow.AddDays(-10)).Count() > 0 ?
+                        sumOfTrans * (Constants.MaxiSavings_IntRate_TranOcurredLessTenDays / 365) :
+                        sumOfTrans * (Constants.MaxiSavings_IntRate_TranOcurredGreaterTenDays / 365);
             }
-            return interestEarned;
+            return 0.0;
         }
 
         public double sumTransactions()
@@ -115,6 +109,5 @@ namespace AbcBank
             }
             return strRet;
         }
-
     }
 }

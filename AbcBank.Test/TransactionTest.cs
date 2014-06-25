@@ -14,16 +14,11 @@ namespace AbcBank.Test
         [Test]
         public void Transaction_Constructor_InstanceCreated()
         {
-            Transaction t = new Transaction(5);
+            DateTime time = DateTime.UtcNow;
+            Transaction t = new Transaction(5, Transaction.transactionType.DEPOSIT, time);
             Assert.AreEqual(true, t is Transaction);
             Assert.AreEqual(5.0, t.Amount);
-            t = new Transaction(-5);
-            Assert.AreEqual(-5.0, t.Amount);
-            // Assumption is the suite of tests will complete in under an hour and therefore
-            // year, month and hour will be same as that of the transaction, the minute and second portions of the time may not.
-            Assert.AreEqual(DateTime.UtcNow.Year, t.UtcDate.Year);
-            Assert.AreEqual(DateTime.UtcNow.Month, t.UtcDate.Month);
-            Assert.AreEqual(DateTime.UtcNow.Hour, t.UtcDate.Hour);
-        }
+            Assert.AreEqual(t.UtcDate, time);
+         }
     }
 }

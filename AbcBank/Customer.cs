@@ -26,6 +26,7 @@ namespace AbcBank
             this.accounts = new List<Account>();
         }
 
+        // Customer can only open one of each account type
         public Customer openAccount(Account account)
         {
             if (Accounts.Where(a => a.Type == account.Type).Count() != 0)
@@ -56,14 +57,16 @@ namespace AbcBank
             return statement;
         }
 
+
         public void transferFunds(Account.AccountType source, Account.AccountType destination, double amount)
         {
+            // Only one type of each account is allowed for a customer 
             Account acctFrom = Accounts.Where(a => a.Type == source).FirstOrDefault();
             if (acctFrom == null)
                 throw new Exception("Cannot complete transfer. Source account does not exist");
             Account acctDest = Accounts.Where(a => a.Type == destination).FirstOrDefault();
             if (acctDest == null)
-                throw new Exception("Cannot complete transfer. Source account does not exist");
+                throw new Exception("Cannot complete transfer. Destination account does not exist");
             bool bAcctFromSuccess = false;
             bool bAcctDestSuccess = false;
             try

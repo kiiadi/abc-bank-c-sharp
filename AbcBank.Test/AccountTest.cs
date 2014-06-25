@@ -11,7 +11,7 @@ namespace AbcBank.Test
     [TestFixture]
     public class AccountTest
     {
-        private static readonly double DOUBLE_DELTA = 1e-15;
+        private static readonly double DOUBLE_DELTA = 1e-7;
 
         [Test]
         public void Account_Constructor_InstanceCreated()
@@ -45,26 +45,26 @@ namespace AbcBank.Test
         {
             Account account = new Account(Account.AccountType.CHECKING);
             account.deposit(500);
-            Assert.AreEqual(account.interestEarned(), 0.5);
+            Assert.AreEqual(account.interestEarned(), 0.00136986, DOUBLE_DELTA);
            
             account = new Account(Account.AccountType.SAVINGS);
             account.deposit(500);
             // account < 1000
-            Assert.AreEqual(account.interestEarned(), 0.5);
+            Assert.AreEqual(account.interestEarned(), 0.001369863, DOUBLE_DELTA);
             account.deposit(1000);
             // account > 1000
-            Assert.AreEqual(account.interestEarned(), 2.0);
- 
+            Assert.AreEqual(account.interestEarned(), 0.00273972, DOUBLE_DELTA);
+
             account = new Account(Account.AccountType.MAXI_SAVINGS);
             account.deposit(500);
             // account < 1000
-            Assert.AreEqual(account.interestEarned(), 10.0);
+            Assert.AreEqual(account.interestEarned(), 0.06849315, DOUBLE_DELTA);
             account.deposit(1000);
             // account < 2000
-            Assert.AreEqual(account.interestEarned(), 45.0);
+            Assert.AreEqual(account.interestEarned(), 0.20547945, DOUBLE_DELTA);
             account.deposit(1000);
             // account > 2000
-            Assert.AreEqual(account.interestEarned(), 120.0);
+            Assert.AreEqual(account.interestEarned(), 0.34246575, DOUBLE_DELTA);
         }
 
 
