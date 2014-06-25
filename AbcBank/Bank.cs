@@ -24,15 +24,8 @@ namespace AbcBank
         {
             String summary = "Customer Summary";
             foreach (Customer c in customers)
-                summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
+                summary += "\n - " + c.Name+ " (" + StringHelper.PluralizeStringBasedOnNumber(c.Accounts.Count(), "account") + ")";
             return summary;
-        }
-
-        //Make sure correct plural of word is created based on the number passed in:
-        //If number passed in is 1 just return the word otherwise add an 's' at the end
-        private String format(int number, String word)
-        {
-            return number + " " + (number == 1 ? word : word + "s");
         }
 
         public double totalInterestPaid()
@@ -45,16 +38,10 @@ namespace AbcBank
 
         public String getFirstCustomer()
         {
-            try
-            {
-                customers = null;
-                return customers[0].getName();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                return "Error";
-            }
+             if (customers.Count() > 0)
+                 return customers[0].Name;
+             else
+                 throw new Exception("There are no customers in the bank, therefore the first customer cannot be returned.");
         }
     }
 }

@@ -7,58 +7,98 @@ using NUnit.Framework;
 
 namespace AbcBank.Test
 {
+    // Using naming convention <Method-Name Under Test>_<Scenario>_<Expected-Outcome>
     [TestFixture]
     public class BankTest
     {
-        private static readonly double DOUBLE_DELTA = 1e-15;
-
         [Test]
-        public void customerSummary()
+        public void customerSummary_CreateCustomersAndAccounts_CustomerSummary()
         {
             Bank bank = new Bank();
             Customer john = new Customer("John");
-            john.openAccount(new Account(Account.CHECKING));
+            Assert.AreEqual("Customer Summary", bank.customerSummary());
+            john.openAccount(new Account(Account.AccountType.CHECKING));
             bank.addCustomer(john);
-
-            Assert.AreEqual("Customer Summary\n - John (1 account)", bank.customerSummary());
+            john.openAccount(new Account(Account.AccountType.SAVINGS));
+            john.openAccount(new Account(Account.AccountType.MAXI_SAVINGS));
+            Assert.AreEqual("Customer Summary\n - John (3 accounts)", bank.customerSummary());
+            Customer bill = new Customer("Bill");
+            bill.openAccount(new Account(Account.AccountType.MAXI_SAVINGS));
+            bank.addCustomer(bill);
+            Assert.AreEqual("Customer Summary\n - John (3 accounts)\n - Bill (1 account)", bank.customerSummary());
         }
 
         [Test]
-        public void checkingAccount()
+        public void checkingAccount_CreateCheckingAccount_CheckingAccountWithBalances_()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.CHECKING);
+            Account checkingAccount = new Account(Account.AccountType.CHECKING);
             Customer bill = new Customer("Bill").openAccount(checkingAccount);
             bank.addCustomer(bill);
-
+            Assert.AreEqual(checkingAccount.Type, Account.AccountType.CHECKING);
+            Assert.Throws(typeof(ArgumentException), ()=>{checkingAccount.deposit(-100.00); });
+            Assert.Throws(typeof(ArgumentException), ()=>{ checkingAccount.withdraw(-100.00); });
             checkingAccount.deposit(100.0);
-
-            Assert.AreEqual(0.1, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual(checkingAccount.sumTransactions(), 100.0);
+            checkingAccount.withdraw(50.0);
+            Assert.AreEqual(checkingAccount.sumTransactions(), 50.0);
+            Assert.AreEqual(0.00013698, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
+            checkingAccount.deposit(2000.0);
+            Assert.AreEqual(0.00561643, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
         }
 
         [Test]
-        public void savings_account()
+        public void savingsAccount_CreateSavingAccount_SavingAccountWithBalances()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
-
-            checkingAccount.deposit(1500.0);
-
-            Assert.AreEqual(2.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Account savingsAccount = new Account(Account.AccountType.SAVINGS);
+            Customer bill = new Customer("Bill").openAccount(savingsAccount);
+            bank.addCustomer(bill);
+            Assert.AreEqual(savingsAccount.Type, Account.AccountType.SAVINGS);
+            Assert.Throws(typeof(ArgumentException), () => { savingsAccount.deposit(-100.00); });
+            Assert.Throws(typeof(ArgumentException), () => { savingsAccount.withdraw(-100.00); });
+            savingsAccount.deposit(100.0);
+            Assert.AreEqual(savingsAccount.sumTransactions(), 100.0);
+            savingsAccount.withdraw(50.0);
+            Assert.AreEqual(savingsAccount.sumTransactions(), 50.0);
+            Assert.AreEqual(0.00013698, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
+            savingsAccount.deposit(2000.0);
+            Assert.AreEqual(0.00849314, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
         }
 
         [Test]
-        public void maxi_savings_account()
+        public void maxiSavingsAccount_CreateMaxiSavingsAccount_MaxiSavingAccountWithBalances()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.MAXI_SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
-
-            checkingAccount.deposit(3000.0);
-
-            Assert.AreEqual(170.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Account maxiSavings = new Account(Account.AccountType.MAXI_SAVINGS);
+            Customer bill = new Customer("Bill").openAccount(maxiSavings);
+            bank.addCustomer(bill);
+            Assert.AreEqual(maxiSavings.Type, Account.AccountType.MAXI_SAVINGS);
+            Assert.Throws(typeof(ArgumentException), () => { maxiSavings.deposit(-100.00); });
+            Assert.Throws(typeof(ArgumentException), () => { maxiSavings.withdraw(-100.00); });
+            maxiSavings.deposit(100.0);
+            Assert.AreEqual(maxiSavings.sumTransactions(), 100.0);
+            maxiSavings.withdraw(50.0);
+            Assert.AreEqual(maxiSavings.sumTransactions(), 50.0);
+            Assert.AreEqual(0.00013698, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
+            maxiSavings.deposit(2000.0);
+            Assert.AreEqual(0.00561643, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
         }
 
+        [Test]
+        public void getFirstCustomer_CreateBankWithCustomers_RetrieveFirstCustomer()
+        {
+            Bank bank = new Bank();
+            Account account = new Account(Account.AccountType.MAXI_SAVINGS);
+            Customer bill = new Customer("Bill").openAccount(account);
+            bank.addCustomer(bill);
+            account = new Account(Account.AccountType.MAXI_SAVINGS);
+            Customer joe = new Customer("Joe").openAccount(account);
+            bank.addCustomer(joe);
+            account = new Account(Account.AccountType.MAXI_SAVINGS);
+            Customer bob = new Customer("Bob").openAccount(account);
+            bank.addCustomer(bob);
+            Assert.AreEqual(bank.getFirstCustomer(), bill.Name);
+        }
     }
 }
