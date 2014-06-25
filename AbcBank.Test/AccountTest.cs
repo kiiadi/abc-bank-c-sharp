@@ -87,7 +87,6 @@ namespace AbcBank.Test
             Assert.AreEqual(account.getStringRepresentationForAccount(), "Savings Account\n");
             account = new Account(Account.AccountType.MAXI_SAVINGS);
             Assert.AreEqual(account.getStringRepresentationForAccount(), "Maxi Savings Account\n");
-
         }
     }
 }
