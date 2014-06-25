@@ -51,7 +51,7 @@ namespace AbcBank.Test
             c.openAccount(account);
             account.deposit(500);
             account.deposit(1000);
-            Assert.AreEqual(c.totalInterestEarned(), 2.5);
+            Assert.AreEqual(c.totalInterestEarned(), 0.00684931, Constants.DOUBLE_DELTA);
         }
 
         [Test] 

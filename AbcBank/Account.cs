@@ -57,22 +57,22 @@ namespace AbcBank
         public double interestEarned()
         {
             double sumOfTrans = this.sumTransactions();
-            double interestEarned = 0.0;
+            double dailyAccrualDivisor = 365;
             switch (this.Type)
             {
                 case AccountType.CHECKING:
-                    return sumTransactions() * (Constants.Checking_IntRate / 365);
+                    return sumTransactions() * (Constants.Checking_IntRate / dailyAccrualDivisor);
 
                 case AccountType.SAVINGS:
                     if (sumOfTrans <= 1000)
-                        return sumOfTrans * (Constants.MaxiSavings_IntRate_TranOcurredLessTenDays / 365);
+                        return sumOfTrans * (Constants.MaxiSavings_IntRate_TranOcurredLessTenDays / dailyAccrualDivisor);
                     else
-                        return (1 / 365) + (sumOfTrans - 1000) * (Constants.Savings_IntRate_BalGreater1000 / 365);
+                        return (1 / dailyAccrualDivisor) + (sumOfTrans - 1000) * (Constants.Savings_IntRate_BalGreater1000 / dailyAccrualDivisor);
 
                 case AccountType.MAXI_SAVINGS:
-                    return Transactions.Where(x => x.UtcDate <= DateTime.UtcNow.AddDays(-10)).Count() > 0 ?
-                        sumOfTrans * (Constants.MaxiSavings_IntRate_TranOcurredLessTenDays / 365) :
-                        sumOfTrans * (Constants.MaxiSavings_IntRate_TranOcurredGreaterTenDays / 365);
+                    return Transactions.Where(x => x.UtcDate >= DateTime.UtcNow.AddDays(-10)).Count() > 0 ?
+                        sumOfTrans * (Constants.MaxiSavings_IntRate_TranOcurredLessTenDays / dailyAccrualDivisor) :
+                        sumOfTrans * (Constants.MaxiSavings_IntRate_TranOcurredGreaterTenDays / dailyAccrualDivisor);
             }
             return 0.0;
         }

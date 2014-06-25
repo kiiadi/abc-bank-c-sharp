@@ -11,8 +11,6 @@ namespace AbcBank.Test
     [TestFixture]
     public class AccountTest
     {
-        private static readonly double DOUBLE_DELTA = 1e-7;
-
         [Test]
         public void Account_Constructor_InstanceCreated()
         {
@@ -45,26 +43,28 @@ namespace AbcBank.Test
         {
             Account account = new Account(Account.AccountType.CHECKING);
             account.deposit(500);
-            Assert.AreEqual(account.interestEarned(), 0.00136986, DOUBLE_DELTA);
+            Assert.AreEqual(account.interestEarned(), 0.00136986, Constants.DOUBLE_DELTA);
            
             account = new Account(Account.AccountType.SAVINGS);
             account.deposit(500);
             // account < 1000
-            Assert.AreEqual(account.interestEarned(), 0.001369863, DOUBLE_DELTA);
+            Assert.AreEqual(account.interestEarned(), 0.001369863, Constants.DOUBLE_DELTA);
             account.deposit(1000);
             // account > 1000
-            Assert.AreEqual(account.interestEarned(), 0.00273972, DOUBLE_DELTA);
+            Assert.AreEqual(account.interestEarned(), 0.00547945, Constants.DOUBLE_DELTA);
 
             account = new Account(Account.AccountType.MAXI_SAVINGS);
             account.deposit(500);
-            // account < 1000
-            Assert.AreEqual(account.interestEarned(), 0.06849315, DOUBLE_DELTA);
-            account.deposit(1000);
-            // account < 2000
-            Assert.AreEqual(account.interestEarned(), 0.20547945, DOUBLE_DELTA);
-            account.deposit(1000);
-            // account > 2000
-            Assert.AreEqual(account.interestEarned(), 0.34246575, DOUBLE_DELTA);
+            account.Transactions.Add(new Transaction(200.0, Transaction.transactionType.DEPOSIT,
+                DateTime.UtcNow.AddDays(-11)));
+            account.Transactions.Add(new Transaction(200.0, Transaction.transactionType.DEPOSIT,
+                DateTime.UtcNow.AddDays(-15)));
+            // Interest rate used here will be 5% because all transactions are older than 10 days
+            Assert.AreEqual(account.interestEarned(), 0.00246575, Constants.DOUBLE_DELTA);
+            account.Transactions.Add(new Transaction(200.0, Transaction.transactionType.DEPOSIT,
+                DateTime.UtcNow.AddDays(-2)));
+            // Interest rate used here will 0.1% because there is a transaction within the last 10 days
+            Assert.AreEqual(account.interestEarned(), 0.00301369, Constants.DOUBLE_DELTA);
         }
 
 

@@ -11,8 +11,6 @@ namespace AbcBank.Test
     [TestFixture]
     public class BankTest
     {
-        private static readonly double DOUBLE_DELTA = 1e-15;
-
         [Test]
         public void customerSummary_CreateCustomersAndAccounts_CustomerSummary()
         {
@@ -44,9 +42,9 @@ namespace AbcBank.Test
             Assert.AreEqual(checkingAccount.sumTransactions(), 100.0);
             checkingAccount.withdraw(50.0);
             Assert.AreEqual(checkingAccount.sumTransactions(), 50.0);
-            Assert.AreEqual(0.05, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual(0.00013698, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
             checkingAccount.deposit(2000.0);
-            Assert.AreEqual(2.05, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual(0.00561643, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
         }
 
         [Test]
@@ -63,10 +61,9 @@ namespace AbcBank.Test
             Assert.AreEqual(savingsAccount.sumTransactions(), 100.0);
             savingsAccount.withdraw(50.0);
             Assert.AreEqual(savingsAccount.sumTransactions(), 50.0);
-            Assert.AreEqual(0.05, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual(0.00013698, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
             savingsAccount.deposit(2000.0);
-            Assert.AreEqual(3.1, bank.totalInterestPaid(), DOUBLE_DELTA);
-
+            Assert.AreEqual(0.00849314, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
         }
 
         [Test]
@@ -83,9 +80,9 @@ namespace AbcBank.Test
             Assert.AreEqual(maxiSavings.sumTransactions(), 100.0);
             maxiSavings.withdraw(50.0);
             Assert.AreEqual(maxiSavings.sumTransactions(), 50.0);
-            Assert.AreEqual(1.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual(0.00013698, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
             maxiSavings.deposit(2000.0);
-            Assert.AreEqual(75.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual(0.00561643, bank.totalInterestPaid(), Constants.DOUBLE_DELTA);
         }
 
         [Test]
@@ -103,6 +100,5 @@ namespace AbcBank.Test
             bank.addCustomer(bob);
             Assert.AreEqual(bank.getFirstCustomer(), bill.Name);
         }
-
     }
 }
