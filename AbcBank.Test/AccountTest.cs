@@ -54,17 +54,16 @@ namespace AbcBank.Test
             Assert.AreEqual(account.interestEarned(), 0.00547945, Constants.DOUBLE_DELTA);
 
             account = new Account(Account.AccountType.MAXI_SAVINGS);
-            account.deposit(500);
             account.Transactions.Add(new Transaction(200.0, Transaction.transactionType.DEPOSIT,
                 DateTime.UtcNow.AddDays(-11)));
             account.Transactions.Add(new Transaction(200.0, Transaction.transactionType.DEPOSIT,
                 DateTime.UtcNow.AddDays(-15)));
             // Interest rate used here will be 5% because all transactions are older than 10 days
-            Assert.AreEqual(account.interestEarned(), 0.00246575, Constants.DOUBLE_DELTA);
+            Assert.AreEqual(account.interestEarned(), 0.05479452, Constants.DOUBLE_DELTA);
             account.Transactions.Add(new Transaction(200.0, Transaction.transactionType.DEPOSIT,
                 DateTime.UtcNow.AddDays(-2)));
             // Interest rate used here will 0.1% because there is a transaction within the last 10 days
-            Assert.AreEqual(account.interestEarned(), 0.00301369, Constants.DOUBLE_DELTA);
+            Assert.AreEqual(account.interestEarned(), 0.00164383, Constants.DOUBLE_DELTA);
         }
 
 
