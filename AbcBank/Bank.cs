@@ -1,60 +1,74 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace AbcBank
 {
     public class Bank
     {
-        private List<Customer> customers;
+        #region private fields
+        private List<Customer> _customers = new List<Customer>();
+        #endregion
 
+        #region ctor(s)
         public Bank()
         {
-            customers = new List<Customer>();
         }
+        #endregion
 
-        public void addCustomer(Customer customer)
+        #region public methods
+        public void AddCustomer(Customer customer)
         {
-            customers.Add(customer);
+            _customers.Add(customer);
         }
 
-        public String customerSummary()
+        public String BuildCustomerSummary()
         {
-            String summary = "Customer Summary";
-            foreach (Customer c in customers)
-                summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
-            return summary;
-        }
+            StringBuilder summary = new StringBuilder("Customer Summary:");
+            _customers.ForEach(
+                c => { summary.AppendFormat("{0} - {1} ({2})", System.Environment.NewLine, c.Name, Format(c.NumberOfAccounts, "account")); }
+                );
 
-        //Make sure correct plural of word is created based on the number passed in:
-        //If number passed in is 1 just return the word otherwise add an 's' at the end
-        private String format(int number, String word)
+            return summary.ToString();
+        }
+        public double TotalInterestPaid()
         {
-            return number + " " + (number == 1 ? word : word + "s");
+            return _customers.Select(c => c.TotalInterestEarned()).Sum();
         }
-
-        public double totalInterestPaid()
+        public String GetFirstCustomer()
         {
-            double total = 0;
-            foreach (Customer c in customers)
-                total += c.totalInterestEarned();
-            return total;
+            return GetFirstCustomer(null);
         }
-
-        public String getFirstCustomer()
+        /*"First customer" only makes sense if you specify the sorting criteria*/
+        public String GetFirstCustomer(IComparer<Customer> customerComparer)
         {
             try
             {
-                customers = null;
-                return customers[0].getName();
+                if (_customers.Count == 0)
+                    throw new ApplicationException("No customers.  Things are not good :-(");
+
+                List<Customer> clonedCustomers = new List<Customer>(_customers);
+                clonedCustomers.Sort(customerComparer);
+
+                return clonedCustomers[0].Name;
             }
             catch (Exception e)
             {
+                /*error handling can be improved*/
                 Console.WriteLine(e.ToString());
                 return "Error";
             }
         }
+        #endregion
+
+        #region private methods
+        //Make sure correct plural of word is created based on the number passed in:
+        //If number passed in is 1 just return the word otherwise add an 's' at the end
+        private String Format(int number, String word)
+        {
+            return string.Format("{0}{1}", word, number <= 1 ? string.Empty : "s");
+        }
+        #endregion
     }
 }
