@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,15 +8,23 @@ namespace AbcBank
 {
     public class Transaction
     {
-        public readonly double amount;
-
-        private DateTime transactionDate;
+        private readonly double _amount;
+        private DateTime _transactionDate;
 
         public Transaction(double amount)
         {
-            this.amount = amount;
-            this.transactionDate = DateProvider.getInstance().now();
+            _amount = amount;
+            _transactionDate = DateProvider.Instance.now();
         }
+        public double Amount
+        {
+            get { return _amount; }
+        }
+        public DateTime TransactionDate
+        {
+            get { return _transactionDate; }
+        } 
+
 
     }
 }
