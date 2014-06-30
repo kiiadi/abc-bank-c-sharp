@@ -1,97 +1,58 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AbcBank
 {
     public class Customer
     {
-        private String name;
-        private List<Account> accounts;
+        #region private fields
+        private String _name;
+        private List<Account> _accounts = new List<Account>();
+        #endregion
 
+        #region ctor(s)
         public Customer(String name)
         {
-            this.name = name;
-            this.accounts = new List<Account>();
+            this._name = name;
         }
+        #endregion
 
-        public String getName()
+        #region public methods
+        public String Name { get { return _name; } }
+        public Customer OpenAccount(Account account)
         {
-            return name;
-        }
-
-        public Customer openAccount(Account account)
-        {
-            accounts.Add(account);
+            _accounts.Add(account);
             return this;
         }
-
-        public int getNumberOfAccounts()
+        public int NumberOfAccounts { get{ return _accounts.Count;} }
+        public double TotalInterestEarned()
         {
-            return accounts.Count;
+            return _accounts.Select(a => a.InterestEarned()).Sum();
         }
-
-        public double totalInterestEarned()
-        {
-            double total = 0;
-            foreach (Account a in accounts)
-                total += a.interestEarned();
-            return total;
-        }
-
         /*******************************
          * This method gets a statement
          *********************************/
-        public String getStatement()
+        public String BuildStatement()
         {
             //JIRA-123 Change by Joe Bloggs 29/7/1988 start
-            String statement = null; //reset statement to null here
+            //String statement = null; //reset statement to null here
             //JIRA-123 Change by Joe Bloggs 29/7/1988 end
-            statement = "Statement for " + name + "\n";
+            StringBuilder statement = new StringBuilder();
+            statement.AppendFormat("Statement for {0}{1}", _name, System.Environment.NewLine);
+
             double total = 0.0;
-            foreach (Account a in accounts)
-            {
-                statement += "\n" + statementForAccount(a) + "\n";
-                total += a.sumTransactions();
-            }
-            statement += "\nTotal In All Accounts " + toDollars(total);
-            return statement;
+            _accounts.ForEach(
+                a => { 
+                    statement.AppendFormat("{0}{1}", System.Environment.NewLine, a.BuildStatement()); 
+                    total += a.SumTransactions(); 
+                }
+            );
+            statement.AppendFormat("{0}Total In All Accounts: {1}", System.Environment.NewLine, total.ToDollars());
+            
+            return statement.ToString();
         }
-
-        private String statementForAccount(Account a)
-        {
-            String s = "";
-
-            //Translate to pretty account type
-            switch (a.getAccountType())
-            {
-                case Account.CHECKING:
-                    s += "Checking Account\n";
-                    break;
-                case Account.SAVINGS:
-                    s += "Savings Account\n";
-                    break;
-                case Account.MAXI_SAVINGS:
-                    s += "Maxi Savings Account\n";
-                    break;
-            }
-
-            //Now total up all the transactions
-            double total = 0.0;
-            foreach (Transaction t in a.transactions)
-            {
-                s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.amount) + "\n";
-                total += t.amount;
-            }
-            s += "Total " + toDollars(total);
-            return s;
-        }
-
-        private String toDollars(double d)
-        {
-            return String.Format("${0:N2}", Math.Abs(d));
-        }
+        #endregion
     }
 }
