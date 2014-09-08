@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VisualState xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ShowCheckBoxes="false">
+  <TopNode>[0-1000]C:\GitY\abc-bank-c-sharp\AbcBank.sln</TopNode>
+  <SelectedNode>[0-1000]C:\GitY\abc-bank-c-sharp\AbcBank.sln</SelectedNode>
+  <ExcludeCategories>false</ExcludeCategories>
+  <Nodes>
+    <Node UniqueName="[0-1000]C:\GitY\abc-bank-c-sharp\AbcBank.sln" Expanded="true" />
+    <Node UniqueName="[0-1022]C:\GitY\abc-bank-c-sharp\AbcBank.Test\bin\Debug\AbcBank.Test.dll" Expanded="true" />
+    <Node UniqueName="[0-1023]AbcBank" Expanded="true" />
+    <Node UniqueName="[0-1024]AbcBank.Test" Expanded="true" />
+    <Node UniqueName="[0-1002]AbcBank.Test.AccountTest" Expanded="true" />
+    <Node UniqueName="[0-1011]AbcBank.Test.CustomerTest" Expanded="true" />
+    <Node UniqueName="[0-1017]AbcBank.Test.ManagerTest" Expanded="true" />
+  </Nodes>
+</VisualState>
