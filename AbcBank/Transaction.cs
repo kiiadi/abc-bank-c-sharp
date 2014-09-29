@@ -8,15 +8,12 @@ namespace AbcBank
 {
     public class Transaction
     {
-        public readonly double amount;
-
-        private DateTime transactionDate;
-
-        public Transaction(double amount)
+        public Transaction(DateTime date, double amount)
         {
-            this.amount = amount;
-            this.transactionDate = DateProvider.getInstance().now();
+            Date = date;
+            Amount = amount;
         }
-
+        public DateTime Date { get; private set; }
+        public double Amount { get; private set; }
     }
 }

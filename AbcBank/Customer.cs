@@ -8,90 +8,67 @@ namespace AbcBank
 {
     public class Customer
     {
-        private String name;
-        private List<Account> accounts;
-
-        public Customer(String name)
+        public const string INVALID_SOURCE_ACCOUNT = "Source account is not owned by customer";
+        public const string INVALID_TARGET_ACCOUNT = "Target account is not owned by customer";
+        public const string INVALID_TRANSFER_AMOUNT = "Transfer amount must be greater than zero";
+        private readonly List<Account> accounts = new List<Account>();
+        public Customer(string name)
         {
-            this.name = name;
-            this.accounts = new List<Account>();
+            Name = name;
         }
-
-        public String getName()
+        public string Name{get; private set;}
+        public double GetEarnedInterest()
         {
-            return name;
+            return this.accounts.Sum(a => a.GetEarnedInterest());
         }
-
-        public Customer openAccount(Account account)
+        public string GetStatement()
         {
-            accounts.Add(account);
-            return this;
-        }
-
-        public int getNumberOfAccounts()
-        {
-            return accounts.Count;
-        }
-
-        public double totalInterestEarned()
-        {
-            double total = 0;
-            foreach (Account a in accounts)
-                total += a.interestEarned();
-            return total;
-        }
-
-        /*******************************
-         * This method gets a statement
-         *********************************/
-        public String getStatement()
-        {
-            //JIRA-123 Change by Joe Bloggs 29/7/1988 start
-            String statement = null; //reset statement to null here
-            //JIRA-123 Change by Joe Bloggs 29/7/1988 end
-            statement = "Statement for " + name + "\n";
+            var statement = new StringBuilder("Statement for " + Name);
             double total = 0.0;
-            foreach (Account a in accounts)
+            foreach (var account in accounts)
             {
-                statement += "\n" + statementForAccount(a) + "\n";
-                total += a.sumTransactions();
+                statement.Append("\n" + account.GetStatement() + "\n");
+                total += account.GetSumOfTransactions();
             }
-            statement += "\nTotal In All Accounts " + toDollars(total);
-            return statement;
+            statement.Append("\nTotal In All Accounts " + Utility.ToDollars(total));
+            return statement.ToString();
         }
-
-        private String statementForAccount(Account a)
+        public string GetSummary()
         {
-            String s = "";
-
-            //Translate to pretty account type
-            switch (a.getAccountType())
+            switch (this.accounts.Count)
             {
-                case Account.CHECKING:
-                    s += "Checking Account\n";
-                    break;
-                case Account.SAVINGS:
-                    s += "Savings Account\n";
-                    break;
-                case Account.MAXI_SAVINGS:
-                    s += "Maxi Savings Account\n";
-                    break;
+                case 0:
+                    return string.Format("- {0} (no accounts)", Name);
+                case 1:
+                    return string.Format("- {0} (1 account)", Name);
+                default:
+                    return string.Format("- {0} ({1} accounts)", Name, this.accounts.Count);
             }
-
-            //Now total up all the transactions
-            double total = 0.0;
-            foreach (Transaction t in a.transactions)
-            {
-                s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.amount) + "\n";
-                total += t.amount;
-            }
-            s += "Total " + toDollars(total);
-            return s;
         }
-
-        private String toDollars(double d)
+        public IEnumerable<Account> Accounts
         {
-            return String.Format("${0:N2}", Math.Abs(d));
+            get { return this.accounts; }
+        }
+        public void AddAccount(Account account)
+        {
+            this.accounts.Add(account);
+        }
+        
+        public void Transfer(Account from, Account to, double amount)
+        {
+
+            if (!this.accounts.Contains(from))
+                throw new Exception(INVALID_SOURCE_ACCOUNT);
+
+            if (!this.accounts.Contains(to))
+                throw new Exception(INVALID_TARGET_ACCOUNT);
+
+            if (amount <= 0d)
+                throw new Exception(INVALID_TRANSFER_AMOUNT);
+
+
+            from.Withdraw(amount);
+            to.Deposit(amount);
         }
     }
 }
