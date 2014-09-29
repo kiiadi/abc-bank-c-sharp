@@ -8,53 +8,34 @@ namespace AbcBank
 {
     public class Bank
     {
-        private List<Customer> customers;
-
+        private readonly List<Customer> customers = new List<Customer>();
         public Bank()
         {
-            customers = new List<Customer>();
+            
         }
-
-        public void addCustomer(Customer customer)
+        public void AddCustomer(Customer customer)
         {
-            customers.Add(customer);
+            if (this.customers.Contains(customer))
+                throw new Exception("Customer already exists");
+
+            this.customers.Add(customer);
+            
         }
-
-        public String customerSummary()
+        public string GetCustomerSummary()
         {
-            String summary = "Customer Summary";
-            foreach (Customer c in customers)
-                summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
-            return summary;
+            var summary = new StringBuilder("Customer Summary");
+            foreach (var c in this.customers)
+                summary.AppendFormat("\n {0}",c.GetSummary());
+            
+            return summary.ToString();
         }
-
-        //Make sure correct plural of word is created based on the number passed in:
-        //If number passed in is 1 just return the word otherwise add an 's' at the end
-        private String format(int number, String word)
+        public IEnumerable<Customer> Customers
         {
-            return number + " " + (number == 1 ? word : word + "s");
+            get {return this.customers; }
         }
-
-        public double totalInterestPaid()
+        public double GetTotalPaidInterest()
         {
-            double total = 0;
-            foreach (Customer c in customers)
-                total += c.totalInterestEarned();
-            return total;
-        }
-
-        public String getFirstCustomer()
-        {
-            try
-            {
-                customers = null;
-                return customers[0].getName();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                return "Error";
-            }
+            return this.customers.Sum(a => a.GetEarnedInterest());
         }
     }
 }
