@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AbcBank.Test
 {
-    [TestFixture, Description("Tests for Checking Account class and its base Account class")]
+    [TestFixture, Description("Tests for Account class")]
     public class AccountTest
     {
         

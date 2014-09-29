@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 namespace AbcBank.Test
 {
-    [TestFixture]
+    [TestFixture, Description("Tests for Bank class")]
     public class BankTest
     {   
       

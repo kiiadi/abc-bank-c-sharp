@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace AbcBank.Test
 {
-    [TestFixture]
+    [TestFixture, Description("Tests for Customer class")]
     public class CustomerTest
     {
         [Test]
