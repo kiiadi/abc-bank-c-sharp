@@ -5,62 +5,77 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
+using AbcBank.AccountManager;
+
+
 namespace AbcBank.Test
 {
     [TestFixture]
     public class CustomerTest
     {
 
-        [Test] //Test customer statement generation
-        public void testApp()
-        {
-
-            Account checkingAccount = new Account(Account.CHECKING);
-            Account savingsAccount = new Account(Account.SAVINGS);
-
-            Customer henry = new Customer("Henry").openAccount(checkingAccount).openAccount(savingsAccount);
-
-            checkingAccount.deposit(100.0);
-            savingsAccount.deposit(4000.0);
-            savingsAccount.withdraw(200.0);
-
-            Assert.AreEqual("Statement for Henry\n" +
-                    "\n" +
-                    "Checking Account\n" +
-                    "  deposit $100.00\n" +
-                    "Total $100.00\n" +
-                    "\n" +
-                    "Savings Account\n" +
-                    "  deposit $4,000.00\n" +
-                    "  withdrawal $200.00\n" +
-                    "Total $3,800.00\n" +
-                    "\n" +
-                    "Total In All Accounts $3,900.00", henry.getStatement());
-        }
-
+   
         [Test]
         public void testOneAccount()
         {
-            Customer oscar = new Customer("Oscar").openAccount(new Account(Account.SAVINGS));
+            Customer oscar = new Customer("Oscar");
+            oscar.openAccount(AccountType.Savings);
             Assert.AreEqual(1, oscar.getNumberOfAccounts());
         }
 
         [Test]
-        public void testTwoAccount()
+        public void testTwoAccounts()
         {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
+            Customer oscar = new Customer("Oscar");
+            oscar.openAccount(AccountType.Savings);
+            oscar.openAccount(AccountType.Checking);
             Assert.AreEqual(2, oscar.getNumberOfAccounts());
         }
 
-        [Ignore]
-        public void testThreeAcounts()
+        [Test]
+        public void WhenCheckingAccountIsCreated()
         {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
-            Assert.AreEqual(3, oscar.getNumberOfAccounts());
+            Customer oscar = new Customer("Oscar");
+     
+            var account = oscar.openAccount(AccountType.Checking);
+            Assert.IsInstanceOf(typeof(CheckingAccount), account);
         }
+
+        [Test]
+        public void WhenSavingsAccountIsCreated()
+        {
+            Customer oscar = new Customer("Oscar");
+
+            var account = oscar.openAccount(AccountType.Savings);
+            Assert.IsInstanceOf(typeof(SavingsAccount), account);
+        }
+
+        [Test]
+        public void WhenMaxiSavingsAccountIsCreated()
+        {
+            Customer oscar = new Customer("Oscar");
+
+            var account = oscar.openAccount(AccountType.MaxiSavings);
+            Assert.IsInstanceOf(typeof(MaxiSavingsAccount), account);
+        }
+
+        [Test]
+        public void GettingTotalInterestEarnedOnAllAccount()
+        {
+            Customer oscar = new Customer("Oscar");
+
+            var account = oscar.openAccount(AccountType.MaxiSavings);
+            account.setAccountBalance(54033);
+
+            var account2 = oscar.openAccount(AccountType.Savings);
+            account2.setAccountBalance(90003);
+
+            var expectedTotal = account.getInterest() + account2.getInterest();
+
+            var totalInterest = oscar.totalInterestEarned();
+
+            Assert.AreEqual(expectedTotal, totalInterest);
+        }
+
     }
 }

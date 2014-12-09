@@ -1,4 +1,10 @@
+
 ﻿using System;
+
+﻿using AbcBank.AccountManager;
+using System;
+using System.Collections.Generic;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +15,11 @@ namespace AbcBank
     public class Customer
     {
         private String name;
-        private List<Account> accounts;
-
+        private List<IAccount> accounts;
         public Customer(String name)
         {
             this.name = name;
-            this.accounts = new List<Account>();
+            this.accounts = new List<IAccount>();
         }
 
         public String getName()
@@ -22,10 +27,16 @@ namespace AbcBank
             return name;
         }
 
-        public Customer openAccount(Account account)
+ 
+        public IAccount openAccount(AccountType accountType)
         {
+            //To do - dependency injection for factory class
+            var accountFactory = new AccountFactory();
+            IAccount account = accountFactory.createAccount(accountType);
+
             accounts.Add(account);
-            return this;
+
+            return account;
         }
 
         public int getNumberOfAccounts()
@@ -36,14 +47,20 @@ namespace AbcBank
         public double totalInterestEarned()
         {
             double total = 0;
-            foreach (Account a in accounts)
-                total += a.interestEarned();
+
+             foreach (IAccount a in accounts)
+                total += a.getInterest();
             return total;
         }
 
-        /*******************************
-         * This method gets a statement
-         *********************************/
+
+
+           
+        
+        /*
+
+        
+>>>>>>> parent of 8d292fa... Revert "Only added one feature while refactoring"
         public String getStatement()
         {
             //JIRA-123 Change by Joe Bloggs 29/7/1988 start
@@ -51,7 +68,11 @@ namespace AbcBank
             //JIRA-123 Change by Joe Bloggs 29/7/1988 end
             statement = "Statement for " + name + "\n";
             double total = 0.0;
+<<<<<<< HEAD
             foreach (Account a in accounts)
+=======
+            foreach (IAccount a in accounts)
+>>>>>>> parent of 8d292fa... Revert "Only added one feature while refactoring"
             {
                 statement += "\n" + statementForAccount(a) + "\n";
                 total += a.sumTransactions();
@@ -60,13 +81,18 @@ namespace AbcBank
             return statement;
         }
 
+<<<<<<< HEAD
         private String statementForAccount(Account a)
+=======
+        private String statementForAccount(IAccount a)
+>>>>>>> parent of 8d292fa... Revert "Only added one feature while refactoring"
         {
             String s = "";
 
             //Translate to pretty account type
             switch (a.getAccountType())
             {
+<<<<<<< HEAD
                 case Account.CHECKING:
                     s += "Checking Account\n";
                     break;
@@ -74,6 +100,15 @@ namespace AbcBank
                     s += "Savings Account\n";
                     break;
                 case Account.MAXI_SAVINGS:
+=======
+                case AccountType.Checking:
+                    s += "Checking Account\n";
+                    break;
+                case AccountType.Savings:
+                    s += "Savings Account\n";
+                    break;
+                case AccountType.MaxiSavings:
+>>>>>>> parent of 8d292fa... Revert "Only added one feature while refactoring"
                     s += "Maxi Savings Account\n";
                     break;
             }
@@ -93,5 +128,8 @@ namespace AbcBank
         {
             return String.Format("${0:N2}", Math.Abs(d));
         }
+<<<<<<< HEAD
+=======
+         * */
     }
 }

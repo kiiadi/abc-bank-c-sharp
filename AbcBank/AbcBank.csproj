@@ -39,12 +39,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account.cs" />
+ <Compile Include="Account.cs" />
+    <Compile Include="AccountManager\AccountFactory.cs" />
+    <Compile Include="AccountManager\MaxiSavings.cs" />
+    <Compile Include="AccountManager\SavingsAccount.cs" />
+    <Compile Include="AccountManager\CheckingAccount.cs" />
+    <Compile Include="AccountManager\IAccount.cs" />
+    <Compile Include="AccountManager\AbstractAccount.cs" />
+    <Compile Include="AccountManager\AccountTypes.cs" />
     <Compile Include="Bank.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="DateProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transaction.cs" />
+    <Compile Include="TransactionActions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
