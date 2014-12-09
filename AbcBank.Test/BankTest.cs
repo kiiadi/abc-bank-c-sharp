@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 
+using AbcBank.AccountManager;
+
 namespace AbcBank.Test
 {
     [TestFixture]
@@ -17,47 +19,66 @@ namespace AbcBank.Test
         {
             Bank bank = new Bank();
             Customer john = new Customer("John");
-            john.openAccount(new Account(Account.CHECKING));
+
+            john.openAccount(AccountType.Checking);
             bank.addCustomer(john);
 
             Assert.AreEqual("Customer Summary\n - John (1 account)", bank.customerSummary());
         }
 
+
         [Test]
-        public void checkingAccount()
+        public void interestPaidCheckingAccount()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.CHECKING);
-            Customer bill = new Customer("Bill").openAccount(checkingAccount);
+            Customer bill = new Customer("Bill");
+            var account = bill.openAccount(AccountType.Checking);
             bank.addCustomer(bill);
 
-            checkingAccount.deposit(100.0);
+            account.deposit(100.0);
 
             Assert.AreEqual(0.1, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
 
         [Test]
-        public void savings_account()
+        public void interestPaidSavingsAccount()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
+            Customer bill = new Customer("Bill");
+            var account = bill.openAccount(AccountType.Savings);
+            bank.addCustomer(bill);
 
-            checkingAccount.deposit(1500.0);
+            account.deposit(1500.0);
+
 
             Assert.AreEqual(2.0, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
 
+
         [Test]
-        public void maxi_savings_account()
+        public void interestPaid_WhenMaxiSavingsHasNoWithDrawals()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.MAXI_SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
+            Customer bill = new Customer("Bill");
+            var account = bill.openAccount(AccountType.MaxiSavings);
+            bank.addCustomer(bill); ;
 
-            checkingAccount.deposit(3000.0);
+            account.deposit(3000.0);
 
-            Assert.AreEqual(170.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual(150.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+        }
+
+        [Test]
+        public void interestPaid_WhenMaxiSavingsHasRecentWithDrawals()
+        {
+            Bank bank = new Bank();
+            Customer bill = new Customer("Bill");
+            var account = bill.openAccount(AccountType.MaxiSavings);
+            bank.addCustomer(bill); ;
+            account.setAccountBalance(4000);
+            account.withdraw(3000.0);
+
+            Assert.AreEqual(10.0, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
 
     }
