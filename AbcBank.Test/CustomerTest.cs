@@ -1,17 +1,18 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using System.Threading.Tasks;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using AbcBank;
 
 namespace AbcBank.Test
 {
-    [TestFixture]
+    [TestClass]
     public class CustomerTest
     {
 
-        [Test] //Test customer statement generation
+        [TestMethod] //Test customer statement generation
         public void testApp()
         {
 
@@ -38,14 +39,14 @@ namespace AbcBank.Test
                     "Total In All Accounts $3,900.00", henry.getStatement());
         }
 
-        [Test]
+        [TestMethod]
         public void testOneAccount()
         {
             Customer oscar = new Customer("Oscar").openAccount(new Account(Account.SAVINGS));
             Assert.AreEqual(1, oscar.getNumberOfAccounts());
         }
 
-        [Test]
+        [TestMethod]
         public void testTwoAccount()
         {
             Customer oscar = new Customer("Oscar")
@@ -54,13 +55,61 @@ namespace AbcBank.Test
             Assert.AreEqual(2, oscar.getNumberOfAccounts());
         }
 
-        [Ignore]
+        [TestMethod]
         public void testThreeAcounts()
         {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
+            Customer oscar = new Customer("Oscar");
+            oscar.openAccount(new Account(Account.SAVINGS));
             oscar.openAccount(new Account(Account.CHECKING));
+            oscar.openAccount(new Account(Account.MAXI_SAVINGS));
             Assert.AreEqual(3, oscar.getNumberOfAccounts());
         }
+
+        [TestMethod] //Test transfer between customer account
+        public void testTransfer()
+        {
+
+            Account checkingAccount = new Account(Account.CHECKING);
+            Account savingsAccount = new Account(Account.SAVINGS);
+
+            Customer henry = new Customer("Henry").openAccount(checkingAccount).openAccount(savingsAccount);
+
+            checkingAccount.deposit(100.0);
+            savingsAccount.deposit(500.0);
+
+            checkingAccount.TransferToAccount(100.0, savingsAccount);
+
+            Assert.AreEqual("Statement for Henry\n" +
+                    "\n" +
+                    "Checking Account\n" +
+                    "  deposit $100.00\n" +
+                    "  withdrawal $100.00\n" +
+                    "Total $0.00\n" +
+                    "\n" +
+                    "Savings Account\n" +
+                    "  deposit $500.00\n" +
+                    "  deposit $100.00\n" +
+                    "Total $600.00\n" +
+                    "\n" +
+                    "Total In All Accounts $600.00", henry.getStatement());
+        }
+
+
+        [TestMethod] //Test transfer between customer account
+        public void testAccrIntr()
+        {
+
+            Account checkingAccount = new Account(Account.CHECKING);
+            Account savingsAccount = new Account(Account.SAVINGS);
+
+            Customer henry = new Customer("Henry").openAccount(checkingAccount).openAccount(savingsAccount);
+
+            checkingAccount.deposit(100.0);
+            savingsAccount.deposit(500.0);
+
+            double accrIntr = henry.getAccruedInterest();
+            Assert.AreEqual(0.082, accrIntr,0.001);
+        }        
+
     }
 }
