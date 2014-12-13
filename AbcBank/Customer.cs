@@ -1,13 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AbcBank
 {
     public class Customer
-    {
+    {        
+
         private String name;
         private List<Account> accounts;
 
@@ -31,6 +30,11 @@ namespace AbcBank
         public int getNumberOfAccounts()
         {
             return accounts.Count;
+        }
+
+        public List<Account> getAccounts()
+        {
+            return accounts;
         }
 
         public double totalInterestEarned()
@@ -89,9 +93,45 @@ namespace AbcBank
             return s;
         }
 
-        private String toDollars(double d)
+        public String toDollars(double d)
         {
             return String.Format("${0:N2}", Math.Abs(d));
+        }
+
+        public double getAccruedInterest()
+        {
+            bool transactionsExist = false;
+            foreach (Account a in accounts)
+            {
+                if (a.transactions.Count > 0) 
+                {
+                    transactionsExist = true;
+                }
+            }            
+            if (!transactionsExist)
+            {
+                throw new ArgumentException("Cannot get accrued interest. There is nothing in the bank");
+            }
+            float annualInterest = 0.05f;
+            DateTime min_date = DateTime.Now;
+            double accrIntr = 0;
+            double total = 0.0;
+            foreach (Account a in accounts)
+            {
+                foreach (Transaction t in a.transactions)
+                {
+                    if (DateTime.Compare(t.transactionDate, min_date) < 0)
+                    {
+                        min_date = t.transactionDate;
+                    }
+                }
+                total += a.sumTransactions();
+            }                        
+
+
+
+            accrIntr = Math.Ceiling((DateTime.Now - min_date).TotalDays) / 365 * total * annualInterest;            
+            return accrIntr;
         }
     }
 }
