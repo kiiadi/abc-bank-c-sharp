@@ -8,21 +8,15 @@ namespace AbcBank
 {
     public class Account
     {
-
-        public const int CHECKING = 0;
-        public const int SAVINGS = 1;
-        public const int MAXI_SAVINGS = 2;
-
-        private readonly int accountType;
         public List<Transaction> transactions;
+        public double Balance;
 
-        public Account(int accountType)
+        public Account()
         {
-            this.accountType = accountType;
             this.transactions = new List<Transaction>();
         }
 
-        public void deposit(double amount)
+        public virtual void Deposit(double amount)
         {
             if (amount <= 0)
             {
@@ -34,7 +28,7 @@ namespace AbcBank
             }
         }
 
-        public void withdraw(double amount)
+        public virtual void Withdraw(double amount)
         {
             if (amount <= 0)
             {
@@ -42,50 +36,47 @@ namespace AbcBank
             }
             else
             {
-                transactions.Add(new Transaction(-amount));
+                if (amount <= SumTransactions())
+                {
+                    transactions.Add(new Transaction(-amount));
+                }
+                else
+                {
+                    throw new ArgumentException("amount to withdraw is more than your current balance");
+                }
             }
         }
 
-        public double interestEarned()
+        public virtual double InterestEarned()
         {
-            double amount = sumTransactions();
-            switch (accountType)
-            {
-                case SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.001;
-                    else
-                        return 1 + (amount - 1000) * 0.002;
-                // case SUPER_SAVINGS:
-                //     if (amount <= 4000)
-                //         return 20;
-                case MAXI_SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.02;
-                    if (amount <= 2000)
-                        return 20 + (amount - 1000) * 0.05;
-                    return 70 + (amount - 2000) * 0.1;
-                default:
-                    return amount * 0.001;
-            }
+            double amount = SumTransactions();
+            return amount * 0.001;
         }
 
-        public double sumTransactions()
-        {
-            return checkIfTransactionsExist(true);
-        }
-
-        private double checkIfTransactionsExist(bool checkAll)
+        public double SumTransactions()
         {
             double amount = 0.0;
-            foreach (Transaction t in transactions)
-                amount += t.amount;
+            amount = this.transactions.Sum(t => t.amount);
             return amount;
         }
 
-        public int getAccountType()
+        public virtual AccountType GetAccountType()
         {
-            return accountType;
+            return AccountType.INVALID;
+        }
+
+        public bool CheckIfAnyWithDrawls(int numberofDays)
+        {
+            DateTime startDate = DateTime.Now.Subtract(new TimeSpan(numberofDays, 0, 0, 0));
+
+            foreach (var item in this.transactions.Where(s => s.TranscationDate >= startDate && s.TranscationDate < DateTime.Now))
+            {
+                if (item.amount < 0)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
     }

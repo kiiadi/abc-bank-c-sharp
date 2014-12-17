@@ -11,7 +11,7 @@ namespace AbcBank.Test
     public class TransactionTest
     {
         [Test]
-        public void transaction()
+        public void Test_Transaction()
         {
             Transaction t = new Transaction(5);
             Assert.AreEqual(true, t is Transaction);

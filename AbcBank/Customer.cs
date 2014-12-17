@@ -17,34 +17,48 @@ namespace AbcBank
             this.accounts = new List<Account>();
         }
 
-        public String getName()
+        public String GetName()
         {
             return name;
         }
 
-        public Customer openAccount(Account account)
+        public Customer OpenAccount(Account account)
         {
             accounts.Add(account);
             return this;
         }
 
-        public int getNumberOfAccounts()
+        public bool TransferFunds(Account fromAccount, Account toAccount, double transferAmount)
+        {
+            try
+            {
+                fromAccount.Withdraw(transferAmount);
+                toAccount.Deposit(transferAmount);
+                return true;
+            }
+            catch (Exception ex)
+            {                
+                throw new Exception("Error occured when transferring funds");
+            }
+        }
+
+        public int GetNumberOfAccounts()
         {
             return accounts.Count;
         }
 
-        public double totalInterestEarned()
+        public double TotalInterestEarned()
         {
             double total = 0;
             foreach (Account a in accounts)
-                total += a.interestEarned();
+                total += a.InterestEarned();
             return total;
         }
 
         /*******************************
          * This method gets a statement
          *********************************/
-        public String getStatement()
+        public String GetStatement()
         {
             //JIRA-123 Change by Joe Bloggs 29/7/1988 start
             String statement = null; //reset statement to null here
@@ -53,45 +67,37 @@ namespace AbcBank
             double total = 0.0;
             foreach (Account a in accounts)
             {
-                statement += "\n" + statementForAccount(a) + "\n";
-                total += a.sumTransactions();
-            }
-            statement += "\nTotal In All Accounts " + toDollars(total);
+                statement += "\n" + StatementForAccount(a) + "\n";
+                total += a.SumTransactions();
+            }            
+            statement += "\nTotal In All Accounts " + total.ToDollars();
             return statement;
         }
 
-        private String statementForAccount(Account a)
+        private String StatementForAccount(Account a)
         {
-            String s = "";
-
-            //Translate to pretty account type
-            switch (a.getAccountType())
+            StringBuilder sbld = new StringBuilder();
+            switch (a.GetAccountType())
             {
-                case Account.CHECKING:
-                    s += "Checking Account\n";
+                case AccountType.CHECKING:
+                    sbld.Append("Checking Account\n");
                     break;
-                case Account.SAVINGS:
-                    s += "Savings Account\n";
+                case AccountType.SAVINGS:
+                    sbld.Append("Savings Account\n");
                     break;
-                case Account.MAXI_SAVINGS:
-                    s += "Maxi Savings Account\n";
+                case AccountType.MAXI_SAVINGS:
+                    sbld.Append("Maxi Savings Account\n");
                     break;
             }
-
-            //Now total up all the transactions
             double total = 0.0;
             foreach (Transaction t in a.transactions)
             {
-                s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.amount) + "\n";
+                sbld.Append("  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + t.amount.ToDollars() + "\n");
                 total += t.amount;
             }
-            s += "Total " + toDollars(total);
-            return s;
-        }
+            sbld.Append("Total " + total.ToDollars());
+            return sbld.ToString();
 
-        private String toDollars(double d)
-        {
-            return String.Format("${0:N2}", Math.Abs(d));
         }
     }
 }
