@@ -40,11 +40,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
+    <Compile Include="AccountFactory.cs" />
     <Compile Include="Bank.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="DateProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transaction.cs" />
+    <Compile Include="CheckingAccount.cs" />
+    <Compile Include="MaxiSavingsAccount.cs" />
+    <Compile Include="SavingsAccount.cs" />
+    <Compile Include="SuperSavingsAccount.cs" />
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
