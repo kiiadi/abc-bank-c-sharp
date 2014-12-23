@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,87 +6,56 @@ using System.Threading.Tasks;
 
 namespace AbcBank
 {
-    public class Account
+    public abstract class Account
     {
-
-        public const int CHECKING = 0;
-        public const int SAVINGS = 1;
-        public const int MAXI_SAVINGS = 2;
-
-        private readonly int accountType;
         public List<Transaction> transactions;
-
-        public Account(int accountType)
+        protected Account()  //to avoid instantiation of base class
         {
-            this.accountType = accountType;
             this.transactions = new List<Transaction>();
         }
 
-        public void deposit(double amount)
+        public bool deposit(double amount)
         {
+            bool v_success = false;
             if (amount <= 0)
             {
-                throw new ArgumentException("amount must be greater than zero");
+                throw new ArgumentException("Amount must be greater than zero");
             }
             else
             {
                 transactions.Add(new Transaction(amount));
+                v_success = true;
             }
+            return v_success;
         }
 
-        public void withdraw(double amount)
+        public bool withdraw(double amount)
         {
-            if (amount <= 0)
+            bool v_success = false;
+            if (amount <= 0 || amount > sumTransactions())
             {
-                throw new ArgumentException("amount must be greater than zero");
+                throw new ArgumentException("Amount must be greater than zero and shouldn't exceed the amount in your account");
             }
             else
             {
                 transactions.Add(new Transaction(-amount));
+                v_success = true;
             }
+            return v_success;
         }
-
-        public double interestEarned()
+        public virtual double interestEarned()
         {
             double amount = sumTransactions();
-            switch (accountType)
-            {
-                case SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.001;
-                    else
-                        return 1 + (amount - 1000) * 0.002;
-                // case SUPER_SAVINGS:
-                //     if (amount <= 4000)
-                //         return 20;
-                case MAXI_SAVINGS:
-                    if (amount <= 1000)
-                        return amount * 0.02;
-                    if (amount <= 2000)
-                        return 20 + (amount - 1000) * 0.05;
-                    return 70 + (amount - 2000) * 0.1;
-                default:
-                    return amount * 0.001;
-            }
+            return amount * 0.01;
         }
-
         public double sumTransactions()
-        {
-            return checkIfTransactionsExist(true);
-        }
-
-        private double checkIfTransactionsExist(bool checkAll)
         {
             double amount = 0.0;
             foreach (Transaction t in transactions)
                 amount += t.amount;
             return amount;
-        }
 
-        public int getAccountType()
-        {
-            return accountType;
         }
-
+        public abstract  String getAccountType();
     }
 }
