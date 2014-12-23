@@ -14,11 +14,10 @@ namespace AbcBank.Test
         [Test] //Test customer statement generation
         public void testApp()
         {
+            Account savingsAccount = AccountFactory.CreateAccount(AccountType.Savings); 
+            Account superSavingsAccount = AccountFactory.CreateAccount(AccountType.Super_Savings);
 
-            Account checkingAccount = new Account(Account.CHECKING);
-            Account savingsAccount = new Account(Account.SAVINGS);
-
-            Customer henry = new Customer("Henry").openAccount(checkingAccount).openAccount(savingsAccount);
+            Customer henry = new Customer("Henry").openAccount(savingsAccount).openAccount(superSavingsAccount);
 
             checkingAccount.deposit(100.0);
             savingsAccount.deposit(4000.0);
@@ -39,28 +38,66 @@ namespace AbcBank.Test
         }
 
         [Test]
-        public void testOneAccount()
+        public void OpenAccount_One_Test()
         {
-            Customer oscar = new Customer("Oscar").openAccount(new Account(Account.SAVINGS));
+            Customer oscar = new Customer("Oscar").openAccount(AccountFactory.CreateAccount(AccountType.Savings));//Account.SAVINGS));
             Assert.AreEqual(1, oscar.getNumberOfAccounts());
         }
 
         [Test]
-        public void testTwoAccount()
+        public void OpenAccount_Two_Test()
         {
             Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
+                    .openAccount(AccountFactory.CreateAccount(AccountType.Savings));//Account.SAVINGS));
+            oscar.openAccount(AccountFactory.CreateAccount(AccountType.Savings));//Account.CHECKING));
             Assert.AreEqual(2, oscar.getNumberOfAccounts());
         }
 
         [Ignore]
-        public void testThreeAcounts()
+        public void OpenAccount_Three_Test()
         {
             Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
+                    .openAccount(AccountFactory.CreateAccount(AccountType.Savings));//Account.SAVINGS));
+            oscar.openAccount(AccountFactory.CreateAccount(AccountType.Maxi_Savings));//Account.CHECKING));
             Assert.AreEqual(3, oscar.getNumberOfAccounts());
+        }
+        [Test]
+        public void TransferFunds_lessThanAmount_Test()
+        {
+            Account savingsAccount = AccountFactory.CreateAccount(AccountType.Savings);
+            Account maxiSavingsAccount = AccountFactory.CreateAccount(AccountType.Maxi_Savings);
+            Customer oscar = new Customer("Oscar")
+                    .openAccount(savingsAccount);//Account.SAVINGS));
+            oscar.openAccount(maxiSavingsAccount);//Account.CHECKING));
+            savingsAccount.deposit(8000);
+            maxiSavingsAccount.deposit(100);
+            
+            Assert.IsTrue(oscar.TransferFunds(savingsAccount, maxiSavingsAccount, 100));
+        }
+        [Test]
+        public void TransferFunds_greaterThanTotalAmount_Test()
+        {
+            try
+            {
+                Account savingsAccount = AccountFactory.CreateAccount(AccountType.Savings);
+                Account maxiSavingsAccount = AccountFactory.CreateAccount(AccountType.Maxi_Savings);
+                Customer oscar = new Customer("Oscar")
+                        .openAccount(savingsAccount);//Account.SAVINGS));
+                oscar.openAccount(maxiSavingsAccount);//Account.CHECKING));
+                savingsAccount.deposit(8000);
+                maxiSavingsAccount.deposit(100);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is ArgumentException);
+            }
+            
+        }
+        [Test]
+        public void CustomerCreate_Test()
+        {
+            Customer oscar = new Customer("Oscar");
+            Assert.AreEqual(0, oscar.getNumberOfAccounts());
         }
     }
 }
