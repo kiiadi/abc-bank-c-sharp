@@ -22,17 +22,11 @@ namespace AbcBank
 
         public String customerSummary()
         {
-            String summary = "Customer Summary";
+            StringBuilder summary = new StringBuilder();
+            summary.Append("Customer Summary");
             foreach (Customer c in customers)
-                summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
+                summary.Append("\n - " + c.getName() + " (" + Utility.format(c.getNumberOfAccounts(), "account") + ")");
             return summary;
-        }
-
-        //Make sure correct plural of word is created based on the number passed in:
-        //If number passed in is 1 just return the word otherwise add an 's' at the end
-        private String format(int number, String word)
-        {
-            return number + " " + (number == 1 ? word : word + "s");
         }
 
         public double totalInterestPaid()
@@ -45,16 +39,16 @@ namespace AbcBank
 
         public String getFirstCustomer()
         {
+            String name = string.Empty;
             try
             {
-                customers = null;
-                return customers[0].getName();
+               name = customers[0].getName();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
-                return "Error";
+                throw new Exception("Error retrieving first customer", e);
             }
+            return name;
         }
     }
 }
