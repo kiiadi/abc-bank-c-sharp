@@ -39,7 +39,7 @@ namespace AbcBank
                     return 70 + (amount - 2000) * 0.05; 
                 }
             }
-            return 70 + (amount - 2000) * 0.001; //otherwise change to 0.1%
+            return 70 + (amount - 2000) * 0.001; //else change to 0.1%
         }
     }
 }
