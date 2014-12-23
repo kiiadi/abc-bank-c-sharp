@@ -13,7 +13,7 @@ namespace AbcBank.Test
         private static readonly double DOUBLE_DELTA = 1e-15;
 
         [Test]
-        public void customerSummaryTest()
+        public void customerSummary_Test()
         {
             Bank bank = new Bank();
             Customer john = new Customer("John");
