@@ -88,5 +88,20 @@ namespace AbcBank
             return accountType;
         }
 
+        public string AccountTypeName(int accountType)
+        {
+            switch(accountType)
+            {
+                case 0:
+                    return "Checking";
+                case 1:
+                    return "Saving";
+                case 2:
+                    return "Maxi Saving";
+                default:
+                    return string.Empty;
+            }
+            return string.Empty;
+        }
     }
 }

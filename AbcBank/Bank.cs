@@ -20,20 +20,16 @@ namespace AbcBank
             customers.Add(customer);
         }
 
-        public String customerSummary()
+        public List<string> customerSummaries()
         {
-            String summary = "Customer Summary";
+            var customerSummaries = new List<string>();
             foreach (Customer c in customers)
-                summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
-            return summary;
+            {
+                customerSummaries.Add(string.Format("{0}{1}{2} ({3}{4})","Customer Summary","\n - ",c.getName(),c.getNumberOfAccounts(),string.Format(" account{0}",c.getNumberOfAccounts()==1 ? "" : "s")));
+            }
+            return customerSummaries;
         }
 
-        //Make sure correct plural of word is created based on the number passed in:
-        //If number passed in is 1 just return the word otherwise add an 's' at the end
-        private String format(int number, String word)
-        {
-            return number + " " + (number == 1 ? word : word + "s");
-        }
 
         public double totalInterestPaid()
         {
@@ -43,18 +39,9 @@ namespace AbcBank
             return total;
         }
 
-        public String getFirstCustomer()
+        public Customer getFirstCustomer()
         {
-            try
-            {
-                customers = null;
-                return customers[0].getName();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                return "Error";
-            }
+            return customers != null ? customers[0] : null;
         }
     }
 }

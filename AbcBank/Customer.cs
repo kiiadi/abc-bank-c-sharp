@@ -17,6 +17,10 @@ namespace AbcBank
             this.accounts = new List<Account>();
         }
 
+        public Account getAccount(int AccountType)
+        {
+            return  accounts!= null ?  accounts.Where(account => account.getAccountType() == AccountType).Single() : null  ; 
+        }
         public String getName()
         {
             return name;
@@ -24,7 +28,8 @@ namespace AbcBank
 
         public Customer openAccount(Account account)
         {
-            accounts.Add(account);
+            if (accounts.Where(acc => acc.getAccountType() == account.getAccountType()).Count() == 0)
+                accounts.Add(account);
             return this;
         }
 
@@ -93,5 +98,38 @@ namespace AbcBank
         {
             return String.Format("${0:N2}", Math.Abs(d));
         }
+
+        public double AccountBalance(int accountType)
+        {
+            var CurrentAccount = FetchAccountFromList(accountType);
+            if(CurrentAccount!= null)
+            {
+                return CurrentAccount.sumTransactions();
+            }
+            return 0.0;
+        }
+
+        public string TransferBetweenAccounts(int Account1, int Account2,double amount)
+        {
+            var message = string.Empty;
+            var balAccount1 = AccountBalance(Account1);
+            var balAccount2 = AccountBalance(Account2);
+            if(balAccount2-balAccount1 >= amount)
+            {
+                 FetchAccountFromList(Account1).deposit(amount);
+                 FetchAccountFromList(Account2).withdraw(amount);
+                 return message = string.Format("Transfer Compelete:  amount {0} moved from {1} (current balance {3}) to {2} (current balance {4}) ", amount, FetchAccountFromList(Account1).AccountTypeName(Account2),
+                     FetchAccountFromList(Account1).AccountTypeName(Account1), AccountBalance(Account2), AccountBalance(Account1));
+            }
+            return message = string.Format("Transfer Failed : Amount {0} greater difference (second account - first account) {1} ({2}) - {3} ({4}) ", amount, FetchAccountFromList(Account1).AccountTypeName(Account2)
+                , AccountBalance(Account2), FetchAccountFromList(Account1).AccountTypeName(Account1), AccountBalance(Account1));
+
+        }
+        private Account FetchAccountFromList(int accountType)
+        {
+            return accounts.Where(account => account.getAccountType() == accountType).Single();
+        }
+
     }
+
 }

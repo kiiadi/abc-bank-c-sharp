@@ -7,24 +7,18 @@ using NUnit.Framework;
 
 namespace AbcBank.Test
 {
-    [TestFixture]
-    public class CustomerTest
+    public class CustomerTest : BankTestBase
     {
-
-        [Test] //Test customer statement generation
+        [Test]
         public void testApp()
         {
 
-            Account checkingAccount = new Account(Account.CHECKING);
-            Account savingsAccount = new Account(Account.SAVINGS);
+            createAdditionalAccount(1);
+            addMoneyToAccount(0, 100.0);
+            addMoneyToAccount(1, 4000.0);
+            withdrawMoneyFromAccount(1, 200.0);
 
-            Customer henry = new Customer("Henry").openAccount(checkingAccount).openAccount(savingsAccount);
-
-            checkingAccount.deposit(100.0);
-            savingsAccount.deposit(4000.0);
-            savingsAccount.withdraw(200.0);
-
-            Assert.AreEqual("Statement for Henry\n" +
+            Assert.AreEqual("Statement for John\n" +
                     "\n" +
                     "Checking Account\n" +
                     "  deposit $100.00\n" +
@@ -35,32 +29,37 @@ namespace AbcBank.Test
                     "  withdrawal $200.00\n" +
                     "Total $3,800.00\n" +
                     "\n" +
-                    "Total In All Accounts $3,900.00", henry.getStatement());
+                    "Total In All Accounts $3,900.00", bank.getFirstCustomer().getStatement());
         }
 
-        [Test]
-        public void testOneAccount()
+
+        [TestCase(0,0,1)]
+        [TestCase(1,1,2)]
+        [TestCase(2,2,3)]
+        public void testAmountofAccounts(int accountCount, int accountType,int expectedValue)
         {
-            Customer oscar = new Customer("Oscar").openAccount(new Account(Account.SAVINGS));
-            Assert.AreEqual(1, oscar.getNumberOfAccounts());
+            for(int x =0; x <= accountCount; x++)
+            {
+                createAdditionalAccount(x);
+            }
+            Assert.AreEqual(expectedValue, bank.getFirstCustomer().getNumberOfAccounts());
+                
         }
 
-        [Test]
-        public void testTwoAccount()
+        [TestCase(100.0,200.0,100.0,200.0,100.0,"Transfer Compelete:  amount 100 moved from Saving (current balance 100) to Checking (current balance 200) ")]
+        [TestCase(100.0,50.0,100.0,100.0,50.0,"Transfer Failed : Amount 100 greater difference (second account - first account) Saving (50) - Checking (100) ")]
+        public void InterAccountTransfer(double DespositCheckingAmount, double DespositSavingsAmount, double TransferAmount, double expectedAmountChecking, double expectedAmountSavings, string ExpectedMessage )
         {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
-            Assert.AreEqual(2, oscar.getNumberOfAccounts());
-        }
+            createAdditionalAccount(1);
+            addMoneyToAccount(0, DespositCheckingAmount);
+            addMoneyToAccount(1, DespositSavingsAmount);
+            var message = bank.getFirstCustomer().TransferBetweenAccounts(0, 1, TransferAmount);
 
-        [Ignore]
-        public void testThreeAcounts()
-        {
-            Customer oscar = new Customer("Oscar")
-                    .openAccount(new Account(Account.SAVINGS));
-            oscar.openAccount(new Account(Account.CHECKING));
-            Assert.AreEqual(3, oscar.getNumberOfAccounts());
+            Assert.AreEqual(expectedAmountChecking, bank.getFirstCustomer().AccountBalance(0));
+            Assert.AreEqual(expectedAmountSavings,bank.getFirstCustomer().AccountBalance(1));
+            Assert.AreEqual(ExpectedMessage, message);
+
+
         }
     }
 }
