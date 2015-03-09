@@ -16,6 +16,7 @@ namespace AbcBank
         private  long _actionId;
 
         public decimal Balance { get; private set; }
+        public DateTime LastDateChanged { get; private set; }
 
         public AccountHistory()
         {
@@ -39,6 +40,9 @@ namespace AbcBank
         {
             lock (_locker)
             {
+                if (time_ < LastDateChanged) throw new ArgumentException(string.Format("Can't enter a transaction for a date prior to : {0}", LastDateChanged.ToString("yyyy-MM-dd")));
+                LastDateChanged = time_;
+
                 var date = time_.ToString("yyyy-MM-dd");
 
                 var verifiedBalance = this.VerifyBalance(time_, actionType_, amount_, newBalance_);

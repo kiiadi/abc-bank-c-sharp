@@ -81,6 +81,24 @@
             return statement.ToString();
         }
 
+        public String CustomerAccountsStatement(string customer_)
+        {
+            var statement = new StringBuilder();
+            var titleName = string.Format("{0} {1} {2}", this.Title, this.FirstName, this.LastName);
+
+            statement.Append("TotalStatement for ").Append(titleName).Append(Environment.NewLine);
+
+            var total = 0.0M;
+            foreach (var a in this.Accounts)
+            {
+                statement.Append(Environment.NewLine).Append(AccountStatement(a));
+                total += a.ActionsHistory.Balance;
+            }
+            statement.Append(Environment.NewLine).Append("The Total of all ").Append(titleName).Append("'s Accounts: ").Append(Utils.Dollars(total)).Append(Environment.NewLine);
+
+            return statement.ToString();
+        }
+
         private String AccountStatement(BankAccount a_)
         {
             var s = new StringBuilder();

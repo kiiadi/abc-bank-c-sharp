@@ -89,69 +89,9 @@ namespace AbcBank
             return Customers.ContainsKey(ssn_) ? Customers[ssn_] : null;
         }
 
-        public IDictionary<string, IDictionary<AccountType, int>> GetCustomersAccountsReport(IList<string> customerList_)
-        {
-            IDictionary<string, IDictionary<AccountType, int>> customerAccountsDict = new Dictionary<string, IDictionary<AccountType, int>>();
-            foreach (var ssn in customerList_)
-            {
-                if (!Customers.ContainsKey(ssn)) continue;
-                var customer = Customers[ssn];
-                var accounts = customer.Accounts;
-                foreach (var account in accounts)
-                {
-                    var ownerId = account.OwnerAccountId;
-                    if (!customerAccountsDict.ContainsKey(ownerId))
-                    {
-                        customerAccountsDict.Add(ownerId, new Dictionary<AccountType, int>());
-                    }
-
-                    var customerAccounts = customerAccountsDict[ownerId];
-                    var accountType = account.AccountType;
-                    if (!customerAccounts.ContainsKey(accountType))
-                    {
-                        customerAccounts.Add(accountType, 1);
-                    }
-                    else
-                    {
-                        customerAccounts[accountType]++;
-                    }
-                }
-            }
-
-            return customerAccountsDict;
-        }
-
         public double GetTotalInterestRatePaidReport()
         {
             return this.Customers.Values.Sum(customer_ => (double)customer_.TotalInterestEarned());
-        }
-
-        public IDictionary<string, IDictionary<AccountType, AccountHistory>> GetCustomerStatementReport(string ssn_)
-        {
-            IDictionary<string, IDictionary<AccountType, AccountHistory>> customerAccountsDict = new Dictionary<string, IDictionary<AccountType, AccountHistory>>();
-
-            if (!Customers.ContainsKey(ssn_)) return null;
-
-            var customer = Customers[ssn_];
-            var accounts = customer.Accounts;
-
-            foreach (var account in accounts)
-            {
-                var ownerId = account.OwnerAccountId;
-                if (!customerAccountsDict.ContainsKey(ownerId))
-                {
-                    customerAccountsDict.Add(ownerId, new Dictionary<AccountType, AccountHistory>());
-                }
-
-                var customerAccounts = customerAccountsDict[ownerId];
-                var accountType = account.AccountType;
-                if (!customerAccounts.ContainsKey(accountType))
-                {
-                    customerAccounts.Add(accountType, account.ActionsHistory);
-                }
-            }
-
-            return customerAccountsDict;
         }
 
         public string GetGlobalAccountsReport()
@@ -164,6 +104,15 @@ namespace AbcBank
             }
 
             return sb.ToString();
+        }
+
+        public string GetCustomerAccountsReport(string ssn_)
+        {
+            if (!Customers.ContainsKey(ssn_)) return null;
+
+            var customer = Customers[ssn_];
+
+            return customer.TotalAccountsStatement();
         }
 
         public void Dispose()
