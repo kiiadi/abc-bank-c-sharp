@@ -4,6 +4,8 @@ using NUnit.Framework;
 
 namespace AbcBank.Test
 {
+    using System.Text.RegularExpressions;
+
     [TestFixture]
     public class BankTests
     {
@@ -181,6 +183,11 @@ namespace AbcBank.Test
             checkingAccountIsabelle.CalculateInterestRates(Convert.ToDateTime("02/15/2015"));
 
             var globalStatementReport = this._bank.GetGlobalAccountsReport();
+
+            const string SearchFor = "The Total of all";
+            var matches = Regex.Matches(globalStatementReport, SearchFor);
+
+            Assert.IsTrue(matches.Count == 2);
         }
 
         [Test]
@@ -224,7 +231,18 @@ namespace AbcBank.Test
         {
             var customerStatementReport = this._bank.GetCustomerAccountsReport(JohnSmithSocialSecurity);
 
-            //Assert.IsTrue(customerStatementReport.Count == 4);
+            string SearchFor = "The Total of all";
+            var matches = Regex.Matches(customerStatementReport, SearchFor);
+
+            Assert.IsTrue(matches.Count == 1);
+
+            SearchFor = "Saving";
+            matches = Regex.Matches(customerStatementReport, SearchFor);
+            Assert.IsTrue(matches.Count == 3);
+
+            SearchFor = "The Total of all Mr. John Smith's Accounts: [$]21,000.00";
+            matches = Regex.Matches(customerStatementReport, SearchFor);
+            Assert.IsTrue(matches.Count == 1);
         }
     }
 }
