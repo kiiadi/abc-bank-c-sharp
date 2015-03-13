@@ -39,12 +39,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account.cs" />
+    <Compile Include="ActionType.cs" />
+    <Compile Include="BankAccount.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="CheckingBankAccount.cs" />
+    <Compile Include="ConcurrentList.cs" />
+    <Compile Include="AccountHistory.cs" />
+    <Compile Include="AccountTypes.cs" />
     <Compile Include="Bank.cs" />
+    <Compile Include="BankAccountFactory.cs" />
     <Compile Include="Customer.cs" />
     <Compile Include="DateProvider.cs" />
+    <Compile Include="IBank.cs" />
+    <Compile Include="ICustomer.cs" />
+    <Compile Include="InterestRateContainer.cs" />
+    <Compile Include="InterestRateFactory.cs" />
+    <Compile Include="InterestRateTerms.cs" />
+    <Compile Include="InterestRateTypes.cs" />
+    <Compile Include="MaxiSavingBankAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Transaction.cs" />
+    <Compile Include="RateBucket.cs" />
+    <Compile Include="SavingBankAccount.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

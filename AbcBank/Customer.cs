@@ -1,97 +1,111 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AbcBank
+﻿namespace AbcBank
 {
-    public class Customer
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+
+    public class Customer : ICustomer
     {
-        private String name;
-        private List<Account> accounts;
+        public string FirstName { get; private set; }
 
-        public Customer(String name)
+        public string LastName { get; private set; }
+
+        public string Ssn { get; private set; }
+
+        public string Gender { get; private set; }
+
+        public string Title { get; private set; }
+
+        public string Address { get; set; }
+
+        public string Phone { get; set; }
+
+
+        public Customer(string fname_, string lname_, string ssn_, string address_, string phone_, string gender_ = "", string title_ = "")
         {
-            this.name = name;
-            this.accounts = new List<Account>();
+            this.FirstName = fname_;
+            this.LastName = lname_;
+            this.Ssn = ssn_;
+            this.Address = address_;
+            this.Phone = phone_;
+            this.Gender = gender_;
+            this.Title = title_;
+
+            this.Accounts = new ConcurrentList<BankAccount>();
         }
 
-        public String getName()
+        public ConcurrentList<BankAccount> Accounts { get; set; }
+
+        public IList<string> GetAccounts()
         {
-            return name;
+            var list = (from t in Accounts select t.OwnerAccountId).ToList();
+
+            return list;
         }
 
-        public Customer openAccount(Account account)
+        public void InternalTransfer(BankAccount fromAccount_, BankAccount toAccount_, decimal amount_)
         {
-            accounts.Add(account);
-            return this;
+            if (fromAccount_ == null || toAccount_ == null) throw new ArgumentException(string.Format("Account(s) are null"));
+
+            fromAccount_.Withdraw(DateTime.Now, amount_);
+            toAccount_.Deposit(DateTime.Now, amount_);
         }
 
-        public int getNumberOfAccounts()
+        public int NumberOfAccounts()
         {
-            return accounts.Count;
+            return Accounts.Count;
         }
 
-        public double totalInterestEarned()
+        public decimal TotalInterestEarned()
         {
-            double total = 0;
-            foreach (Account a in accounts)
-                total += a.interestEarned();
-            return total;
+            return this.Accounts.Sum(a_ => a_.InterestEarned());
         }
 
-        /*******************************
-         * This method gets a statement
-         *********************************/
-        public String getStatement()
+        public String TotalAccountsStatement()
         {
-            //JIRA-123 Change by Joe Bloggs 29/7/1988 start
-            String statement = null; //reset statement to null here
-            //JIRA-123 Change by Joe Bloggs 29/7/1988 end
-            statement = "Statement for " + name + "\n";
-            double total = 0.0;
-            foreach (Account a in accounts)
+            var statement = new StringBuilder();
+            var titleName = string.Format("{0} {1} {2}", this.Title, this.FirstName, this.LastName);
+
+            statement.Append("TotalStatement for ").Append(titleName).Append(Environment.NewLine);
+
+            var total = 0.0M;
+            foreach (var a in this.Accounts)
             {
-                statement += "\n" + statementForAccount(a) + "\n";
-                total += a.sumTransactions();
+                statement.Append(Environment.NewLine).Append(AccountStatement(a));
+                total += a.ActionsHistory.Balance;
             }
-            statement += "\nTotal In All Accounts " + toDollars(total);
-            return statement;
+            statement.Append(Environment.NewLine).Append("The Total of all ").Append(titleName).Append("'s Accounts: ").Append(Utils.Dollars(total)).Append(Environment.NewLine);
+
+            return statement.ToString();
         }
 
-        private String statementForAccount(Account a)
+        public String CustomerAccountsStatement(string customer_)
         {
-            String s = "";
+            var statement = new StringBuilder();
+            var titleName = string.Format("{0} {1} {2}", this.Title, this.FirstName, this.LastName);
 
-            //Translate to pretty account type
-            switch (a.getAccountType())
-            {
-                case Account.CHECKING:
-                    s += "Checking Account\n";
-                    break;
-                case Account.SAVINGS:
-                    s += "Savings Account\n";
-                    break;
-                case Account.MAXI_SAVINGS:
-                    s += "Maxi Savings Account\n";
-                    break;
-            }
+            statement.Append("TotalStatement for ").Append(titleName).Append(Environment.NewLine);
 
-            //Now total up all the transactions
-            double total = 0.0;
-            foreach (Transaction t in a.transactions)
+            var total = 0.0M;
+            foreach (var a in this.Accounts)
             {
-                s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.amount) + "\n";
-                total += t.amount;
+                statement.Append(Environment.NewLine).Append(AccountStatement(a));
+                total += a.ActionsHistory.Balance;
             }
-            s += "Total " + toDollars(total);
-            return s;
+            statement.Append(Environment.NewLine).Append("The Total of all ").Append(titleName).Append("'s Accounts: ").Append(Utils.Dollars(total)).Append(Environment.NewLine);
+
+            return statement.ToString();
         }
 
-        private String toDollars(double d)
+        private String AccountStatement(BankAccount a_)
         {
-            return String.Format("${0:N2}", Math.Abs(d));
+            var s = new StringBuilder();
+
+            s.Append(a_.AccountType).Append(Environment.NewLine);
+            s.Append(a_.ActionsHistory.TransactionsSummary());
+
+            return s.ToString();
         }
     }
 }

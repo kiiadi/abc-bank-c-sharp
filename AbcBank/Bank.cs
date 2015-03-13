@@ -1,60 +1,123 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbcBank
 {
-    public class Bank
+    using System.Collections.Concurrent;
+    using System.Diagnostics;
+    using System.Text;
+
+    public class Bank : IBank, IDisposable
     {
-        private List<Customer> customers;
-
-        public Bank()
+        public Bank(string name_)
         {
-            customers = new List<Customer>();
+            Name = name_;
+            Customers = new ConcurrentDictionary<string, ICustomer>();
+
+            // register all possible accounts
+            BankAccountFactory<BankAccount>.Register<CheckingBankAccount>(AccountType.Checking);
+            BankAccountFactory<BankAccount>.Register<SavingBankAccount>(AccountType.Saving);
+            BankAccountFactory<BankAccount>.Register<MaxiSavingBankAccount>(AccountType.MaxiSaving);
+
+            // interest rate terms
+            InterestRateFactory<InterestRateTerms>.Register(InterestType.CheckingPrimary, () => new InterestRateTerms(decimal.MaxValue, 0.001));
+            InterestRateFactory<InterestRateTerms>.Register(InterestType.SavingPrimary, () => new InterestRateTerms(1000, 0.001, decimal.MaxValue, 0.002));
+            InterestRateFactory<InterestRateTerms>.Register(InterestType.MaxiSavingPrimary, () => new InterestRateTerms(1000, 0.02, 2000, 0.05, decimal.MaxValue, 0.10));
+            InterestRateFactory<InterestRateTerms>.Register(InterestType.MaxiSavingPenalty, () => new InterestRateTerms(decimal.MaxValue, 0.001));
+
+            // create interest rate terms
+            var checkingPrimaryRates = InterestRateFactory<InterestRateTerms>.Create(InterestType.CheckingPrimary);
+            var savingPrimaryRates = InterestRateFactory<InterestRateTerms>.Create(InterestType.SavingPrimary);
+            var maxiSavingPrimaryRates = InterestRateFactory<InterestRateTerms>.Create(InterestType.MaxiSavingPrimary);
+            var maxiSavingPenaltyRates = InterestRateFactory<InterestRateTerms>.Create(InterestType.MaxiSavingPenalty);
+
+            // register rate terms per Account
+            InterestRateContainer.GetInstance().Register(AccountType.Checking, checkingPrimaryRates);
+            InterestRateContainer.GetInstance().Register(AccountType.Saving, savingPrimaryRates);
+            InterestRateContainer.GetInstance().Register(AccountType.MaxiSaving, maxiSavingPrimaryRates, maxiSavingPenaltyRates);
         }
 
-        public void addCustomer(Customer customer)
+        public void CreateNewCustomer(string fname_, string lname_, string ssn_, string address_, string phone_, string gender_ = "", string title_ = "")
         {
-            customers.Add(customer);
-        }
+            Debug.Assert(ssn_ != null, "ssn_ != null");
+            ICustomer person = new Customer(fname_, lname_, ssn_, address_, phone_, gender_, title_);
+            if (Customers.ContainsKey(ssn_)) throw new ArgumentException(string.Format("Failed to create new Customer {0} - reason: already exist", ssn_));
 
-        public String customerSummary()
-        {
-            String summary = "Customer Summary";
-            foreach (Customer c in customers)
-                summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
-            return summary;
-        }
-
-        //Make sure correct plural of word is created based on the number passed in:
-        //If number passed in is 1 just return the word otherwise add an 's' at the end
-        private String format(int number, String word)
-        {
-            return number + " " + (number == 1 ? word : word + "s");
-        }
-
-        public double totalInterestPaid()
-        {
-            double total = 0;
-            foreach (Customer c in customers)
-                total += c.totalInterestEarned();
-            return total;
-        }
-
-        public String getFirstCustomer()
-        {
             try
             {
-                customers = null;
-                return customers[0].getName();
+                bool tryAdd = this.Customers.TryAdd(ssn_, person);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e.ToString());
-                return "Error";
+                throw;
             }
+        }
+
+        public string OpenNewAccount(string ssn_, AccountType type_, DateTime time_, decimal ib_, AccountHistory accountHistory_)
+        {
+            if (!Customers.ContainsKey(ssn_))
+            {
+                return null;
+            }
+
+            var customer = Customers[ssn_];
+            var interstRateTerms = InterestRateContainer.GetInstance().Get(type_);
+            var account = BankAccountFactory<BankAccount>.Create(type_, ssn_, time_, ib_, interstRateTerms, accountHistory_);
+
+            customer.Accounts.Add(account);
+
+            return account.OwnerAccountId;
+        }
+
+        public string Name { get; set; }
+
+        public ConcurrentDictionary<string, ICustomer> Customers { get; set; }
+
+        public BankAccount GetAccount(string ssn_, string checkingAccountId_)
+        {
+            var customer = Customers.ContainsKey(ssn_) ? Customers[ssn_] : null;
+            if (customer == null) return null;
+
+            var account = customer.Accounts.FirstOrDefault(x_ => x_.OwnerAccountId == checkingAccountId_);
+
+            return account;
+        }
+
+        public ICustomer GetCustomer(string ssn_)
+        {
+            return Customers.ContainsKey(ssn_) ? Customers[ssn_] : null;
+        }
+
+        public double GetTotalInterestRatePaidReport()
+        {
+            return this.Customers.Values.Sum(customer_ => (double)customer_.TotalInterestEarned());
+        }
+
+        public string GetGlobalAccountsReport()
+        {
+            var sb = new StringBuilder();
+
+            foreach (var customerAccount in this.Customers.Values.Select(customer_ => customer_.TotalAccountsStatement()))
+            {
+                sb.Append(customerAccount).Append(Environment.NewLine);
+            }
+
+            return sb.ToString();
+        }
+
+        public string GetCustomerAccountsReport(string ssn_)
+        {
+            if (!Customers.ContainsKey(ssn_)) return null;
+
+            var customer = Customers[ssn_];
+
+            return customer.TotalAccountsStatement();
+        }
+
+        public void Dispose()
+        {
+            Customers.Clear();
         }
     }
 }
