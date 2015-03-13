@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionType.cs" />
     <Compile Include="BankAccount.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="CheckingBankAccount.cs" />

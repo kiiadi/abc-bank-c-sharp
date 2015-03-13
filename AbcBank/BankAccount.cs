@@ -4,14 +4,6 @@ namespace AbcBank
 {
     using System;
 
-    public enum ActionType
-    {
-        Deposit = 101,
-        Interest,
-        Widthdraw,
-        FeeCharge
-    }
-
     public abstract class BankAccount
     {
         public string OwnerAccountId { get; private set; }
