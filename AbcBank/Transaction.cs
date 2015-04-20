@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbcBank
 {
     public class Transaction
     {
-        public readonly double amount;
+        private double fAmount;
+        public double Amount { get { return fAmount; } }
 
-        private DateTime transactionDate;
+        private DateTime fDate;
+        public DateTime Date { get { return fDate; } set { fDate = value; } }
 
         public Transaction(double amount)
         {
-            this.amount = amount;
-            this.transactionDate = DateProvider.getInstance().now();
+            fAmount = amount;
+            Date = DateTime.Now;
         }
-
     }
 }
