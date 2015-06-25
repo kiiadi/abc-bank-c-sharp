@@ -8,14 +8,17 @@ namespace AbcBank
 {
     public class Transaction
     {
-        public readonly double amount;
+        public double amount;
 
         private DateTime transactionDate;
 
-        public Transaction(double amount)
+        private AccountType accountType;
+
+        public Transaction(double amount, AccountType accountType)
         {
             this.amount = amount;
             this.transactionDate = DateProvider.getInstance().now();
+            this.accountType = accountType;
         }
 
     }

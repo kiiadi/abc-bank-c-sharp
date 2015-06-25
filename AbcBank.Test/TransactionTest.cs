@@ -13,7 +13,7 @@ namespace AbcBank.Test
         [Test]
         public void transaction()
         {
-            Transaction t = new Transaction(5);
+            Transaction t = new Transaction(5,AccountType.Checking);
             Assert.AreEqual(true, t is Transaction);
         }
     }
