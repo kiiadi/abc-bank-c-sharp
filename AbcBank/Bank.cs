@@ -24,7 +24,7 @@ namespace AbcBank
         {
             String summary = "Customer Summary";
             foreach (Customer c in customers)
-                summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
+                summary += "\n - " + c.GetName() + " (" + format(c.GetNumberOfAccounts(), "account") + ")";
             return summary;
         }
 
@@ -39,7 +39,7 @@ namespace AbcBank
         {
             double total = 0;
             foreach (Customer c in customers)
-                total += c.totalInterestEarned();
+                total += c.TotalInterestEarned();
             return total;
         }
 
@@ -48,7 +48,7 @@ namespace AbcBank
             try
             {
                 customers = null;
-                return customers[0].getName();
+                return customers[0].GetName();
             }
             catch (Exception e)
             {

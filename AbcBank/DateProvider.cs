@@ -8,13 +8,25 @@ namespace AbcBank
 {
     public class DateProvider
     {
-        private static DateProvider instance = null;
+        private static volatile DateProvider _instance = null;
+        private static object sync = new object();
 
-        public static DateProvider getInstance()
+        public static DateProvider Instance
         {
-            if (instance == null)
-                instance = new DateProvider();
-            return instance;
+            get
+            {
+                if(_instance == null)
+                {
+                    lock(sync)
+                    {
+                        if(_instance ==null)
+                        {
+                            _instance= new DateProvider();
+                        }
+                    }
+                }
+                return _instance;
+            }
         }
 
         public DateTime now()
