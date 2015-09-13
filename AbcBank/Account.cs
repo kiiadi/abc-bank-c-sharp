@@ -6,52 +6,47 @@ using System.Threading.Tasks;
 
 namespace AbcBank
 {
+    public enum AccountType
+    {
+        CHECKING = 0,
+        SAVINGS = 1,
+        MAXI_SAVINGS = 2
+    }
+
     public class Account
     {
+        public AccountType AccountType { get; set; }
 
-        public const int CHECKING = 0;
-        public const int SAVINGS = 1;
-        public const int MAXI_SAVINGS = 2;
+        public List<Transaction> Transactions { get; set; }
 
-        private readonly int accountType;
-        public List<Transaction> transactions;
-
-        public Account(int accountType)
+        public Account(AccountType accountType)
         {
-            this.accountType = accountType;
-            this.transactions = new List<Transaction>();
+            this.AccountType = accountType;
+            this.Transactions = new List<Transaction>();
         }
 
         public void deposit(double amount)
         {
             if (amount <= 0)
-            {
-                throw new ArgumentException("amount must be greater than zero");
-            }
-            else
-            {
-                transactions.Add(new Transaction(amount));
-            }
+                throw new ArgumentOutOfRangeException("amount", "amount must be greater than zero");
+ 
+            Transactions.Add(new Transaction(amount));
         }
 
         public void withdraw(double amount)
         {
             if (amount <= 0)
-            {
-                throw new ArgumentException("amount must be greater than zero");
-            }
-            else
-            {
-                transactions.Add(new Transaction(-amount));
-            }
+                throw new ArgumentOutOfRangeException("amount", "amount must be greater than zero");
+
+           Transactions.Add(new Transaction(-amount));
         }
 
         public double interestEarned()
         {
             double amount = sumTransactions();
-            switch (accountType)
+            switch (AccountType)
             {
-                case SAVINGS:
+                case AccountType.SAVINGS:
                     if (amount <= 1000)
                         return amount * 0.001;
                     else
@@ -59,7 +54,7 @@ namespace AbcBank
                 // case SUPER_SAVINGS:
                 //     if (amount <= 4000)
                 //         return 20;
-                case MAXI_SAVINGS:
+                case AccountType.MAXI_SAVINGS:
                     if (amount <= 1000)
                         return amount * 0.02;
                     if (amount <= 2000)
@@ -72,21 +67,19 @@ namespace AbcBank
 
         public double sumTransactions()
         {
-            return checkIfTransactionsExist(true);
+            if (Transactions.Count == 0)
+                return 0.0;
+
+           return Transactions.Sum(x => x.Amount);
         }
 
-        private double checkIfTransactionsExist(bool checkAll)
+        public Account transferAccounts(Account from)
         {
-            double amount = 0.0;
-            foreach (Transaction t in transactions)
-                amount += t.amount;
-            return amount;
-        }
+            Account to = new Account(from.AccountType);
 
-        public int getAccountType()
-        {
-            return accountType;
-        }
+            to.Transactions.AddRange(from.Transactions);
 
+            return to;
+        }
     }
 }

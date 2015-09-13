@@ -8,36 +8,27 @@ namespace AbcBank
 {
     public class Customer
     {
-        private String name;
-        private List<Account> accounts;
+        public string Name { get; set; }
+        public List<Account> Accounts { get; set; }
 
         public Customer(String name)
         {
-            this.name = name;
-            this.accounts = new List<Account>();
-        }
-
-        public String getName()
-        {
-            return name;
+            this.Name = name;
+            this.Accounts = new List<Account>();
         }
 
         public Customer openAccount(Account account)
         {
-            accounts.Add(account);
+            Accounts.Add(account);
             return this;
-        }
-
-        public int getNumberOfAccounts()
-        {
-            return accounts.Count;
         }
 
         public double totalInterestEarned()
         {
             double total = 0;
-            foreach (Account a in accounts)
-                total += a.interestEarned();
+
+            total = Accounts.Sum(x => x.interestEarned());
+
             return total;
         }
 
@@ -47,46 +38,51 @@ namespace AbcBank
         public String getStatement()
         {
             //JIRA-123 Change by Joe Bloggs 29/7/1988 start
-            String statement = null; //reset statement to null here
+            //Ishmael Sessions - String builder is much more efficient.
+            StringBuilder statement = new StringBuilder();
             //JIRA-123 Change by Joe Bloggs 29/7/1988 end
-            statement = "Statement for " + name + "\n";
+            statement.Append("Statement for " + Name + "\n");
             double total = 0.0;
-            foreach (Account a in accounts)
-            {
-                statement += "\n" + statementForAccount(a) + "\n";
-                total += a.sumTransactions();
-            }
-            statement += "\nTotal In All Accounts " + toDollars(total);
-            return statement;
+            
+            //Linq foreach is easier to read/maintain.
+            Accounts.ForEach(x => {
+                statement.Append(string.Format("\n{0}\n", statementForAccount(x)));
+                total += x.sumTransactions();
+            });
+
+            statement.Append(string.Format("\nTotal In All Accounts {0}", toDollars(total)));
+            return statement.ToString();
         }
 
         private String statementForAccount(Account a)
         {
-            String s = "";
+            //IS - StringBuilder is more efficient.
+            StringBuilder s = new StringBuilder();
 
             //Translate to pretty account type
-            switch (a.getAccountType())
+            switch (a.AccountType)
             {
-                case Account.CHECKING:
-                    s += "Checking Account\n";
+                case AccountType.CHECKING:
+                    s.Append("Checking Account\n");
                     break;
-                case Account.SAVINGS:
-                    s += "Savings Account\n";
+                case AccountType.SAVINGS:
+                    s.Append("Savings Account\n");
                     break;
-                case Account.MAXI_SAVINGS:
-                    s += "Maxi Savings Account\n";
+                case AccountType.MAXI_SAVINGS:
+                    s.Append("Maxi Savings Account\n");
                     break;
             }
 
             //Now total up all the transactions
             double total = 0.0;
-            foreach (Transaction t in a.transactions)
-            {
-                s += "  " + (t.amount < 0 ? "withdrawal" : "deposit") + " " + toDollars(t.amount) + "\n";
-                total += t.amount;
-            }
-            s += "Total " + toDollars(total);
-            return s;
+            //Linq foreach is easier to read/maintain.
+            a.Transactions.ForEach(x => {
+                s.Append(string.Format(" {0} {1}\n", (x.Amount < 0 ? " withdrawal" : " deposit"), toDollars(x.Amount)));
+                total += x.Amount;
+            });
+
+            s.Append(string.Format("Total {0}", toDollars(total)));
+            return s.ToString();
         }
 
         private String toDollars(double d)

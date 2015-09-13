@@ -17,7 +17,7 @@ namespace AbcBank.Test
         {
             Bank bank = new Bank();
             Customer john = new Customer("John");
-            john.openAccount(new Account(Account.CHECKING));
+            john.openAccount(new Account(AccountType.CHECKING));
             bank.addCustomer(john);
 
             Assert.AreEqual("Customer Summary\n - John (1 account)", bank.customerSummary());
@@ -27,7 +27,7 @@ namespace AbcBank.Test
         public void checkingAccount()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.CHECKING);
+            Account checkingAccount = new Account(AccountType.CHECKING);
             Customer bill = new Customer("Bill").openAccount(checkingAccount);
             bank.addCustomer(bill);
 
@@ -40,7 +40,7 @@ namespace AbcBank.Test
         public void savings_account()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.SAVINGS);
+            Account checkingAccount = new Account(AccountType.SAVINGS);
             bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
 
             checkingAccount.deposit(1500.0);
@@ -52,7 +52,7 @@ namespace AbcBank.Test
         public void maxi_savings_account()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.MAXI_SAVINGS);
+            Account checkingAccount = new Account(AccountType.MAXI_SAVINGS);
             bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
 
             checkingAccount.deposit(3000.0);
