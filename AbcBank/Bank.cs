@@ -1,30 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AbcBank
 {
     public class Bank
     {
-        private List<Customer> customers;
+        public List<Customer> Customers { get; set; }
 
         public Bank()
         {
-            customers = new List<Customer>();
+            Customers = new List<Customer>();
         }
 
         public void addCustomer(Customer customer)
         {
-            customers.Add(customer);
+            Customers.Add(customer);
         }
 
         public String customerSummary()
         {
             String summary = "Customer Summary";
-            foreach (Customer c in customers)
-                summary += "\n - " + c.getName() + " (" + format(c.getNumberOfAccounts(), "account") + ")";
+
+            Customers.ForEach(x => summary += string.Format("\n - {0} ({1})", x.Name, format(x.Accounts.Count, "account")));
+            
             return summary;
         }
 
@@ -32,29 +31,26 @@ namespace AbcBank
         //If number passed in is 1 just return the word otherwise add an 's' at the end
         private String format(int number, String word)
         {
-            return number + " " + (number == 1 ? word : word + "s");
+            return string.Format("{0} {1}", number, (number == 1 ? word : word + "s"));
         }
 
         public double totalInterestPaid()
         {
             double total = 0;
-            foreach (Customer c in customers)
-                total += c.totalInterestEarned();
+
+            total = Customers.Sum(x => x.totalInterestEarned());
+
+            //foreach (Customer c in Customers)
+            //    total += c.totalInterestEarned();
             return total;
         }
 
         public String getFirstCustomer()
         {
-            try
-            {
-                customers = null;
-                return customers[0].getName();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-                return "Error";
-            }
+            if (Customers.Count == 0)
+                return "";
+
+            return Customers[0].Name;
         }
     }
 }
