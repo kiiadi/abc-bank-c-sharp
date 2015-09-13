@@ -57,7 +57,7 @@ namespace AbcBank.Test
 
             checkingAccount.deposit(3000.0);
 
-            Assert.AreEqual(170.0, bank.totalInterestPaid(), DOUBLE_DELTA);
+            Assert.AreEqual(150.00, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
 
     }

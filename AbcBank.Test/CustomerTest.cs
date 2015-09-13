@@ -38,6 +38,23 @@ namespace AbcBank.Test
         }
 
         [Test]
+        public void testInterestCalculationNoWithdraw()
+        {
+            Customer bryan = new Customer("Bryan").openAccount(new Account(AccountType.MAXI_SAVINGS));
+            bryan.Accounts[0].deposit(1000);
+            Assert.AreEqual(50, bryan.totalInterestEarned());
+        }
+
+        [Test]
+        public void testInterestCalculationWithWithdraw()
+        {
+            Customer bryan = new Customer("Bryan").openAccount(new Account(AccountType.MAXI_SAVINGS));
+            bryan.Accounts[0].deposit(1500);
+            bryan.Accounts[0].withdraw(500);
+            Assert.AreEqual(10, bryan.totalInterestEarned());
+        }
+
+        [Test]
         public void testTwoAccount()
         {
             Customer oscar = new Customer("Oscar")

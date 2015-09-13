@@ -33,7 +33,7 @@ namespace AbcBank
         //If number passed in is 1 just return the word otherwise add an 's' at the end
         private String format(int number, String word)
         {
-            return number + " " + (number == 1 ? word : word + "s");
+            return string.Format("{0} {1}", number, (number == 1 ? word : word + "s"));
         }
 
         public double totalInterestPaid()
