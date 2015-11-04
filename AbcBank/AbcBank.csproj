@@ -39,11 +39,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account.cs" />
+    <Compile Include="ABCAccount\Account.cs" />
+    <Compile Include="ABCAccount\AccountBase.cs" />
+    <Compile Include="ABCAccount\AccountManager.cs" />
+    <Compile Include="BankUtility.cs" />
+    <Compile Include="CalculationHelper.cs" />
     <Compile Include="Bank.cs" />
+    <Compile Include="ABCAccount\CheckingAccount.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Customer.cs" />
+    <Compile Include="CustomerAccount.cs" />
     <Compile Include="DateProvider.cs" />
+    <Compile Include="ABCAccount\MaxiSavingsAccount.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ABCAccount\SavingAccount.cs" />
     <Compile Include="Transaction.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
