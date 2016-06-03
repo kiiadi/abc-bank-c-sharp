@@ -17,7 +17,7 @@ namespace AbcBank.Test
         {
             Bank bank = new Bank();
             Customer john = new Customer("John");
-            john.openAccount(new Account(Account.CHECKING));
+            john.OpenAccount(new CheckingAccount());
             bank.addCustomer(john);
 
             Assert.AreEqual("Customer Summary\n - John (1 account)", bank.customerSummary());
@@ -27,8 +27,8 @@ namespace AbcBank.Test
         public void checkingAccount()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.CHECKING);
-            Customer bill = new Customer("Bill").openAccount(checkingAccount);
+            CheckingAccount checkingAccount = new CheckingAccount();
+            Customer bill = new Customer("Bill").OpenAccount(checkingAccount);
             bank.addCustomer(bill);
 
             checkingAccount.deposit(100.0);
@@ -40,10 +40,10 @@ namespace AbcBank.Test
         public void savings_account()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
+            SavingsAccount savingAccount = new SavingsAccount();
+            bank.addCustomer(new Customer("Bill").OpenAccount(savingAccount));
 
-            checkingAccount.deposit(1500.0);
+            savingAccount.deposit(1500.0);
 
             Assert.AreEqual(2.0, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
@@ -52,10 +52,10 @@ namespace AbcBank.Test
         public void maxi_savings_account()
         {
             Bank bank = new Bank();
-            Account checkingAccount = new Account(Account.MAXI_SAVINGS);
-            bank.addCustomer(new Customer("Bill").openAccount(checkingAccount));
+            MaxSavingsAccount maxsavingAccount = new MaxSavingsAccount();
+            bank.addCustomer(new Customer("Bill").OpenAccount(maxsavingAccount));
 
-            checkingAccount.deposit(3000.0);
+            maxsavingAccount.deposit(3000.0);
 
             Assert.AreEqual(170.0, bank.totalInterestPaid(), DOUBLE_DELTA);
         }
